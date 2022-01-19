@@ -1,20 +1,18 @@
 #include "../models/system_states.h"
 
 #include <Arduino.h>
-#include <unordered_set>
-
-typedef void(*StateCallbackFunction)(SYSTEM_STATE oldState, SYSTEM_STATE newState);
+#include <unordered_map>
 
 class StateManager
 {
     private:
-        SYSTEM_STATE system_state;
+        SYSTEM_STATE systemState;
 
-        std::unordered_set<StateCallbackFunction> stateChangeListeners;
+        std::unordered_map<SYSTEM_STATE, Task> stateTasks;
     public:
         StateManager();
         SYSTEM_STATE getSystemState();
         void setSystemState(SYSTEM_STATE newState);
-        void listenForStateChange(StateCallbackFunction changeListener);
-        void removeListener(StateCallbackFunction changeListener);
+        void registerStateTask(SYSTEM_STATE state, Task task);
+        void removeStateTask(SYSTEM_STATE state);
 };

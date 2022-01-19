@@ -1,7 +1,7 @@
 enum SYSTEM_STATE {
-    INITIALIZATION,
+    INITIAL,
     READY,
-    PAIRING,
+    PAIR,
     PLAY,
     RESULTS
 };
