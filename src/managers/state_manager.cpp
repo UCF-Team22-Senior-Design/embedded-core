@@ -30,11 +30,11 @@ void StateManager::setSystemState(SYSTEM_STATE newState)
     // Disable the old state's task
     // First, verify that an old task exists
     if(stateTasks.count(oldState) > 0)
-        stateTasks[oldState].disable();
+        (*stateTasks[oldState]).disable();
 
     // Enable the new state's task
     if(stateTasks.count(newState) > 0)
-        stateTasks[newState].enable();
+        (*stateTasks[newState]).enable();
 }
 
 /**
@@ -49,7 +49,7 @@ void StateManager::setSystemState(SYSTEM_STATE newState)
  * @param state The state in which the task shall be enabled
  * @param task The task which shall be enabled in the selected state.
  */
-void StateManager::registerStateTask(SYSTEM_STATE state, Task task)
+void StateManager::registerStateTask(SYSTEM_STATE state, Task* task)
 {
     // Check to see if the state is the one we're currently in.
     if(state == systemState)
@@ -57,8 +57,8 @@ void StateManager::registerStateTask(SYSTEM_STATE state, Task task)
         // We're trying to change the task of the active state. Disable our
         // currently active task, then enable this one.
         if(stateTasks.count(systemState) > 0)
-            stateTasks[systemState].disable();
-        task.enable();
+            (*stateTasks[systemState]).disable();
+        (*task).enable();
     }
 
     // Store the task inside of the stateTasks array
@@ -80,7 +80,7 @@ void StateManager::removeStateTask(SYSTEM_STATE state)
     {
         // We're trying to remove our currently active task. Disable it.
         if(stateTasks.count(systemState) > 0)
-            stateTasks[systemState].disable();
+            (*stateTasks[systemState]).disable();
     }
 
     // Remove the task from the stateTasks array

@@ -5,19 +5,17 @@
 #include <SPIFFS.h>
 #include <Update.h>
 
+/* -- Project Includes -- */
+#include "managers/state_manager.h"
+
+StateManager stateManager;
+
 void setup() {
-  // put your setup code here, to run once:
+  // Initialize Serial Communication
   Serial.begin(115200);
   Serial.println("Hello, world!");
 
-  // -- Initialize hardware -- //
-  
-  // Establish Button Inputs
-
-  // -- Initialize state management -- //
-
-  // -- Initialize network communication -- //
-
+  // -- Initialize hardware managers-- //
 
   // -- Prepare tasks / scheduler -- //
 }
