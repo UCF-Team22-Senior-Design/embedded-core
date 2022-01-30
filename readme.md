@@ -52,7 +52,7 @@ Things preceeded with an "@{Device}" are specific to each device. This is most f
 # Priority / TODO
 - [x] Updated State Manager
 - [ ] Prototype the Hardware Managers
-  - [ ] Input Manager
+  - [x] Input Manager
   - [ ] Network Manager
   - [ ] Laser Manager
   - [ ] Audio Manager
