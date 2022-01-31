@@ -1,4 +1,7 @@
 #pragma once
+
+#include <string>
+
 #include <Arduino.h>
 #include <ArduinoJson.h>
 

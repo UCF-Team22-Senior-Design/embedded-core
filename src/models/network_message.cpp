@@ -27,8 +27,8 @@ NetworkMessage::NetworkMessage(uint32_t from, String payload)
         throw std::runtime_error("Malformed Payload Recieved");
 
     // Separate the payload into its parts - the timestamp, tag, and data.
-    timestamp = static_cast<uint32_t>(std::stoul(
-        payload.substring(0, semicolonLocation)));
+    timestamp = static_cast<uint32_t>(strtoul(
+        payload.substring(0, semicolonLocation).c_str(), NULL, 0));
     tag  = String(payload.substring(semicolonLocation + 1, barLocation));
     data = String(payload.substring(barLocation + 1));
 }
