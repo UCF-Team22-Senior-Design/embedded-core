@@ -53,7 +53,7 @@ Things preceeded with an "@{Device}" are specific to each device. This is most f
 - [x] Updated State Manager
 - [ ] Prototype the Hardware Managers
   - [x] Input Manager
-  - [ ] Network Manager
+  - [x] Network Manager
   - [ ] Laser Manager
   - [ ] Audio Manager
   - [ ] Display Manager

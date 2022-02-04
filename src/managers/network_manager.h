@@ -34,4 +34,6 @@ public:
     static void sendMessage(NetworkMessage message, uint32_t destination);
     static void registerCallback(NetworkMessageCallback callback, String tagFilter = "NONE");
     static void deregisterCallback(NetworkMessageCallback callback, String tagFilter);
+
+    static uint32_t getNodeTime();
 };

@@ -100,6 +100,13 @@ void NetworkManager::registerCallback(NetworkMessageCallback callback, String ta
     callbacks[tagFilter.c_str()].push_back(callback);
 }
 
+/**
+ * @brief This function removes callback registration from the network manager - please specify the
+ *        original tag filter when you do.
+ * 
+ * @param callback The callback function to be removed.
+ * @param tagFilter The tag associated with this.
+ */
 void NetworkManager::deregisterCallback(NetworkMessageCallback callback, String tagFilter)
 {
     // De-register a callback for a specific tag filter
@@ -119,4 +126,14 @@ void NetworkManager::deregisterCallback(NetworkMessageCallback callback, String 
     {
         callbackList.erase(it);
     }
+}
+
+/**
+ * @brief This returns the current time of the network
+ * 
+ * @return uint32_t 
+ */
+uint32_t NetworkManager::getNodeTime()
+{
+    return mesh.getNodeTime();
 }
