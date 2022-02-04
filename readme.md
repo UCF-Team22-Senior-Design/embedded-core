@@ -55,7 +55,7 @@ Things preceeded with an "@{Device}" are specific to each device. This is most f
   - [x] Input Manager
   - [x] Network Manager
   - [x] Laser Manager
-  - [ ] Audio Manager
+  - [x] Audio Manager
   - [ ] Display Manager
   - [ ] Lighting Manager
 - [ ] Module Development
