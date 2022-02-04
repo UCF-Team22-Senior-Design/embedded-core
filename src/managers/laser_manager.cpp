@@ -13,8 +13,6 @@ LaserManager::LaserManager() {}
  *        the necessary callbacks for our laser manager. A static
  *        variable keeps track of whether it has been initalized or not, so you
  *        cannot call this twice.
- * 
- * @param scheduler The scheduler to attach the hardware tasks to.
  */
 void LaserManager::initialize()
 {
