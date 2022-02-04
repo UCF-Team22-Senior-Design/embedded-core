@@ -7,12 +7,14 @@
 #include "managers/network_manager.h"
 #include "managers/state_manager.h"
 #include "managers/input_manager.h"
+#include "managers/laser_manager.h"
 
 #include "models/network_message.h"
 
 NetworkManager networkManager;
 StateManager   stateManager;
 InputManager   inputManager;
+LaserManager   laserManager;
 
 Scheduler userScheduler;
 
@@ -23,6 +25,7 @@ void setup() {
 
   // -- Initialize hardware managers-- //
   inputManager.initialize(&userScheduler);
+  laserManager.initialize();
   networkManager.initialize(&userScheduler);
 }
 
