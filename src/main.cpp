@@ -8,6 +8,7 @@
 #include "managers/state_manager.h"
 #include "managers/input_manager.h"
 #include "managers/laser_manager.h"
+#include "managers/audio_manager.h"
 
 #include "models/network_message.h"
 
@@ -27,6 +28,7 @@ void setup() {
   inputManager.initialize(&userScheduler);
   laserManager.initialize();
   networkManager.initialize(&userScheduler);
+  AudioManager::initialize(&userScheduler);
 }
 
 void loop() {
