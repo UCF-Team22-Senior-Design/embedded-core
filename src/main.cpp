@@ -1,17 +1,18 @@
 #include <Arduino.h>
 
 /* -- Dependencies for painlessMesh -- */
-#include <WiFi.h>
-#include <SPIFFS.h>
-#include <Update.h>
-#include <TaskScheduler.h>
+
 
 /* -- Project Includes -- */
+#include "managers/network_manager.h"
 #include "managers/state_manager.h"
 #include "managers/input_manager.h"
 
-StateManager stateManager;
-InputManager inputManager;
+#include "models/network_message.h"
+
+NetworkManager networkManager;
+StateManager   stateManager;
+InputManager   inputManager;
 
 Scheduler userScheduler;
 
@@ -22,9 +23,9 @@ void setup() {
 
   // -- Initialize hardware managers-- //
   inputManager.initialize(&userScheduler);
+  networkManager.initialize(&userScheduler);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  userScheduler.execute();
+  networkManager.update();
 }

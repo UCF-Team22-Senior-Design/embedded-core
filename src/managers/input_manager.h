@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
-#include <TaskSchedulerDeclarations.h>
+#include <painlessMesh.h>
 #include <unordered_map>
 
 /// -------- ADJUST PIN MAPPINGS HERE ------- ///

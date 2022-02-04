@@ -3,7 +3,7 @@
 #include "../models/system_states.h"
 
 #include <Arduino.h>
-#include <TaskSchedulerDeclarations.h>
+#include <painlessMesh.h>
 #include <unordered_map>
 
 class StateManager
