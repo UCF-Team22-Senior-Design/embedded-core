@@ -6,8 +6,6 @@
 // C++ is stupid sometimes.
 bool LaserManager::hasBeenInitialized = false;
 
-LaserManager::LaserManager() {}
-
 /**
  * @brief A function to run once at the start of execution, which establishes
  *        the necessary callbacks for our laser manager. A static

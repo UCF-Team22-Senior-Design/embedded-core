@@ -1,11 +1,10 @@
 #include "state_manager.h"
 
-StateManager::StateManager() {
-    systemState = SYSTEM_STATE::INITIAL;
-}
+SystemState StateManager::systemState = SystemState::Initial;
+std::unordered_map<SystemState, Task*, std::hash<int>> StateManager::stateTasks;
 
 /// @returns The current state of the system
-SYSTEM_STATE StateManager::getSystemState()
+SystemState StateManager::getSystemState()
 {
     return systemState;
 }
@@ -17,9 +16,9 @@ SYSTEM_STATE StateManager::getSystemState()
  * 
  * @param newState The new state of the system.
  */
-void StateManager::setSystemState(SYSTEM_STATE newState)
+void StateManager::setSystemState(SystemState newState)
 {
-    SYSTEM_STATE oldState = systemState;
+    SystemState oldState = systemState;
 
     // If we're changing to the same state, ignore it.
     if(oldState == newState) return;
@@ -49,7 +48,7 @@ void StateManager::setSystemState(SYSTEM_STATE newState)
  * @param state The state in which the task shall be enabled
  * @param task The task which shall be enabled in the selected state.
  */
-void StateManager::registerStateTask(SYSTEM_STATE state, Task* task)
+void StateManager::registerStateTask(SystemState state, Task* task)
 {
     // Check to see if the state is the one we're currently in.
     if(state == systemState)
@@ -73,7 +72,7 @@ void StateManager::registerStateTask(SYSTEM_STATE state, Task* task)
  * 
  * @param state The state to have its task assocations removed
  */
-void StateManager::removeStateTask(SYSTEM_STATE state)
+void StateManager::removeStateTask(SystemState state)
 {
     // Check to see if the state is the one we're currently in.
     if(state == systemState)

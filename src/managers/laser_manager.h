@@ -11,11 +11,8 @@
 class LaserManager
 {
 private:
-
     static bool hasBeenInitialized;
     static void triggerCallback(InputSource source, bool state);
 public:
-    LaserManager();
-
     static void initialize();
 };

@@ -1,21 +1,26 @@
 #pragma once
 
-#include "../models/system_states.h"
-
 #include <Arduino.h>
 #include <painlessMesh.h>
 #include <unordered_map>
 
+enum SystemState {
+    Initial,
+    Ready,
+    Pair,
+    Play,
+    Results
+};
+
 class StateManager
 {
     private:
-        SYSTEM_STATE systemState;
+        static SystemState systemState;
 
-        std::unordered_map<SYSTEM_STATE, Task*, std::hash<int>> stateTasks;
+        static std::unordered_map<SystemState, Task*, std::hash<int>> stateTasks;
     public:
-        StateManager();
-        SYSTEM_STATE getSystemState();
-        void setSystemState(SYSTEM_STATE newState);
-        void registerStateTask(SYSTEM_STATE state, Task* task);
-        void removeStateTask(SYSTEM_STATE state);
+        static SystemState getSystemState();
+        static void setSystemState(SystemState newState);
+        static void registerStateTask(SystemState state, Task* task);
+        static void removeStateTask(SystemState state);
 };
