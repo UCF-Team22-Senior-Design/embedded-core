@@ -63,6 +63,13 @@ bool AudioManager::isAudioPlaying()
  */
 void AudioManager::playAudio(String fileName)
 {
+    // If there is currently audio playing, stop it.
+    if(isAudioPlaying())
+    {
+        wav->stop();
+        taskAudioUpdate.disable();
+    }
+
     // Load the thing as a source
     in = new AudioFileSourceSPIFFS(fileName.c_str());
     wav->begin(in, out);
