@@ -1,14 +1,12 @@
 #include <Arduino.h>
 
-/* -- Dependencies for painlessMesh -- */
-
-
 /* -- Project Includes -- */
 #include "managers/network_manager.h"
 #include "managers/state_manager.h"
 #include "managers/input_manager.h"
 #include "managers/laser_manager.h"
 #include "managers/audio_manager.h"
+#include "managers/lighting_manager.h"
 
 #include "models/network_message.h"
 
@@ -29,6 +27,7 @@ void setup() {
   laserManager.initialize();
   networkManager.initialize(&userScheduler);
   AudioManager::initialize(&userScheduler);
+  LightingManager::initialize(&userScheduler);
 }
 
 void loop() {
