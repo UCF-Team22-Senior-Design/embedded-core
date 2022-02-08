@@ -12,6 +12,8 @@
 #include "managers/audio_manager.h"
 #include "managers/pwm_manager.h"
 
+#include "modules/modules.h"
+
 // Controller-specific managers
 #ifdef PLATFORM_CONTROLLER
   #include "managers/laser_manager.h"
