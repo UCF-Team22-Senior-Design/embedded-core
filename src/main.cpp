@@ -10,6 +10,7 @@
 #include "managers/state_manager.h"
 #include "managers/input_manager.h"
 #include "managers/audio_manager.h"
+#include "managers/pwm_manager.h"
 
 // Controller-specific managers
 #ifdef PLATFORM_CONTROLLER
@@ -31,6 +32,7 @@ void setup() {
   // -- Initialize hardware managers-- //
 
   // Shared managers
+  PWMManager::initialize();
   InputManager::initialize(&userScheduler);
   NetworkManager::initialize(&userScheduler);
   AudioManager::initialize(&userScheduler);
