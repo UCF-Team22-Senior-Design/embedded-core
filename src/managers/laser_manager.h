@@ -5,8 +5,8 @@
 
 // Controller laser is driven by three pins.
 #define PIN_LASER1  12
-#define PIN_LASER2  13
-#define PIN_LASER3  15
+#define PIN_LASER2  14
+#define PIN_LASER3  27
 
 class LaserManager
 {

@@ -4,7 +4,7 @@
 #include <painlessMesh.h>
 #include <Adafruit_NeoPixel.h>
 
-#define LED_PIN 2
+#define LED_PIN 13
 
 #define PIXELS_PER_SEGMENT 3
 #define NUM_SEGMENTS 4

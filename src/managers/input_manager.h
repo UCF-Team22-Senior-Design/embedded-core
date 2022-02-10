@@ -7,7 +7,7 @@
 /// -------- ADJUST PIN MAPPINGS HERE ------- ///
 
 #define PIN_BUTTON_LEFT     36
-#define PIN_BUTTON_RIGHT    37
+#define PIN_BUTTON_RIGHT    39
 #define PIN_TRIGGER         22
 #define PIN_PAIR            36
 #define PIN_PHOTOTRANSISTOR 18
