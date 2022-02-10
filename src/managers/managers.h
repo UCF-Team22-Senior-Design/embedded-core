@@ -8,6 +8,7 @@
 
 #ifdef PLATFORM_CONTROLLER
     #include "laser_manager.h"
+    #include "display_manager.h"
 #endif
 
 #ifdef PLATFORM_TARGET

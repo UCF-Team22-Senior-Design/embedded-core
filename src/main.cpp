@@ -28,6 +28,7 @@ void setup() {
   // Platform-specific managers
 #ifdef PLATFORM_CONTROLLER
   LaserManager::initialize();
+  DisplayManager::initialize();
 #endif
 
 #ifdef PLATFORM_TARGET
