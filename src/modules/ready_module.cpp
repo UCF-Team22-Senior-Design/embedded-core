@@ -2,36 +2,74 @@
 
 int ReadyModule::currentMenuPage = 0;
 
-void ReadyModule::onInitialize()
+/**
+ * @brief Establish our task, bind it to the scheduler.
+ * 
+ * @param userScheduler 
+ */
+void ReadyModule::initialize(Scheduler *userScheduler)
 {
-    // Reset our menu page to zero
-    currentMenuPage = 0;
-    
+    moduleTask.set(TASK_MILLISECOND * 16, TASK_FOREVER, &onUpdate, &onWake, &onSleep);
+
+    // Bind it to our scheduler
+    (*userScheduler).addTask(moduleTask);
 }
 
-void ReadyModule::onWake()
+/**
+ * @brief This function is called when the readyModule task is enabled. Use it to
+ *        prepare variables (load from configuration data), reset operating things,
+ *        and whatever else you'd like. Must return true, otherwise the task will
+ *        not wake up and the system will be dead.
+ */
+bool ReadyModule::onWake()
 {
     // Reset our menu page to zero;
     currentMenuPage = 0;
+
+    Serial.println("I've woked!");
+
+    return true;
 }
 
+/**
+ * @brief This function is called when the readyModule task is disabled. Use it
+ *        to store changes, reset variables, etc.
+ */
 void ReadyModule::onSleep()
 {
     // Put to sleep whatever we have been running
+    Serial.println("I sleep");
 }
 
+/**
+ * @brief Runs every "frame" - perform fixed update things, such as checking 
+ *        inputs, updating screen, etc.
+ */
 void ReadyModule::onUpdate()
 {
-    // Runs every "frame" - perform fixed update things, such as checking inputs,
-    // updating screen, etc.
-}
+    static unsigned long lastMillis = millis();
+    unsigned long time = millis();
+    unsigned long deltaTime = time - lastMillis;
+    lastMillis = time;
 
-void ReadyModule::onInput(InputSource source, bool state)
-{
-    // Every time an input is pressed, this is called.
-}
+    Serial.printf("Ready Module Update [∆T: %lums]", deltaTime);
 
-void ReadyModule::onWirelessEvent(NetworkMessage message)
-{
-    // Every time a wireless event happens, do something.
+    // Do some dummy thing - listen to a button, I guess, and increment the menu
+    // if the button is pressed. If menu reaches a value, reset the task.
+    static unsigned long lastButtonPress = 0;
+    bool buttonPressed = !InputManager::getInputState(InputSource::EXAMPLE);
+    if(buttonPressed && (time - lastButtonPress) > 250)
+    {
+        // Button is pressed - track time, increment value
+        lastButtonPress = time;
+        currentMenuPage++;
+    }
+
+    // Print out current menu page
+    Serial.printf(" currentMenuPage: %d\n", currentMenuPage);
+
+    if(currentMenuPage > 10)
+    {
+        StateManager::setSystemState(SystemState::Ready);
+    }
 }

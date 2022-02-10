@@ -4,17 +4,7 @@
 #include <painlessMesh.h>
 #include <unordered_map>
 
-/// -------- ADJUST PIN MAPPINGS HERE ------- ///
-
-#define PIN_BUTTON_LEFT     36
-#define PIN_BUTTON_RIGHT    39
-#define PIN_TRIGGER         22
-#define PIN_PAIR            36
-#define PIN_PHOTOTRANSISTOR 18
-
-#define PIN_EXAMPLE         14
-
-/// -------- END PIN MAPPING ---------------- ///
+#include "../models/pinouts.h"
 
 #define DEBOUNCE_DELAY 50
 

@@ -1,15 +1,18 @@
 #pragma once
 
-#include "../managers/input_manager.h"
-#include "../managers/network_manager.h"
+#include <painlessMesh.h>
+
+#include "../managers/managers.h"
 
 class Module 
 {
-public:
-    static void onInitialize() {};
-    static void onWake() {};
+protected:
+    static Task moduleTask;
+
+    static bool onWake() {return true;};
     static void onSleep() {};
     static void onUpdate() {};
-    static void onInput(InputSource source, bool state) {};
-    static void onWirelessEvent(NetworkMessage message) {};
+public:
+    static void initialize(Scheduler *userScheduler);
+    static Task* getTask();
 };

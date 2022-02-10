@@ -36,6 +36,9 @@ void InputManager::initialize(Scheduler *scheduler)
     pinMode(PIN_EXAMPLE, INPUT);
     attachInterrupt(digitalPinToInterrupt(PIN_EXAMPLE), InputManager::exampleButtonInterrupt, CHANGE);
 
+    // Assign default value
+    inputStates[InputSource::EXAMPLE] = digitalRead(PIN_EXAMPLE);
+
     hasBeenInitialized = true;
 }
 /**

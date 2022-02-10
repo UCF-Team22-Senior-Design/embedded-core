@@ -19,7 +19,7 @@ void AudioManager::initialize(Scheduler *scheduler)
     hasBeenInitialized = true;
 
     // Create our audio sources & outputs
-    in  = new AudioFileSourceSPIFFS("owin31.wav");
+    in  = new AudioFileSourceSPIFFS("audio/owin31.wav");
     wav = new AudioGeneratorWAV();
     out = new AudioOutputI2S();
     out->SetGain(0.125);

@@ -21,7 +21,7 @@ void StateManager::setSystemState(SystemState newState)
     SystemState oldState = systemState;
 
     // If we're changing to the same state, ignore it.
-    if(oldState == newState) return;
+    //if(oldState == newState) return;
     
     // Update our state value
     systemState = newState;

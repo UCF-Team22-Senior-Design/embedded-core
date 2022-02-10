@@ -8,8 +8,10 @@
 void PWMManager::initialize()
 {
     ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
+#ifdef PLATFORM_CONTROLLER
     ledcAttachPin(PWM_PIN_3V3, PWM_CHANNEL);
-#ifndef CONTROLLER
+#endif
+#ifdef PLATFORM_TARGET
     ledcAttachPin(PWM_PIN_5V, PWM_CHANNEL);
     ledcAttachPin(PWM_PIN_12V, PWM_CHANNEL);
 #endif
