@@ -58,6 +58,8 @@ Things preceeded with an "@{Device}" are specific to each device. This is most f
   - [x] Audio Manager
   - [ ] Display Manager
   - [x] Lighting Manager
+  - [x] PWM Manager
+  - [ ] Configuration Manager (read/write settings in SPIFF system, hold config data during runtime)
 - [ ] Module Development
   - [ ] Ready Module
   - [ ] Pairing Module
