@@ -25,7 +25,7 @@ void DisplayManager::initialize()
  * 
  * @param text The text to be displayed
  */
-static void DisplayManager::drawSimpleScreen(String text, int textSize)
+void DisplayManager::drawSimpleScreen(String text, int textSize)
 {
     // Clear the display
     display.clearDisplay();
@@ -38,10 +38,11 @@ static void DisplayManager::drawSimpleScreen(String text, int textSize)
     // Calculate vertical position for the text
     const int halfHeight = SCREEN_HEIGHT / 2;
     const int halfTextHeight = 4 * textSize; // Text Size 2 has a height of 10x16
-    const int verticalPosition = halfHeight - halfTextHeight;
+    int16_t verticalPosition = halfHeight - halfTextHeight;
 
     // Calculate lateral position for the text
-    int finalX, finalY, finalWidth, finalHeight;
+    int16_t finalX, finalY;
+    uint16_t finalWidth, finalHeight;
     // Fun little helper function that calculates how big the final text will be
     display.getTextBounds(text.c_str(), 0, verticalPosition, 
         &finalX, &finalY, &finalWidth, &finalHeight);

@@ -21,4 +21,4 @@ public:
     // Basic screen functions
     static void drawSimpleScreen(String text, int textSize = 1);
     static void initialize();
-}
+};
