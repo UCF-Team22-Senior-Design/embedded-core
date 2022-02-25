@@ -44,6 +44,21 @@ private:
     static Task exampleButtonResponseTask;
     static void exampleButtonCallback();
     static void IRAM_ATTR exampleButtonInterrupt();
+
+    // LeftButton
+    static Task leftButtonResponseTask;
+    static void leftButtonCallback();
+    static void IRAM_ATTR leftButtonInterrupt();
+
+    // RightButton
+    static Task rightButtonResponseTask;
+    static void rightButtonCallback();
+    static void IRAM_ATTR rightButtonInterrupt();
+    
+    // TrigggerButton
+    static Task triggerButtonResponseTask;
+    static void triggerButtonCallback();
+    static void IRAM_ATTR triggerButtonInterrupt();
 public:
     InputManager();
 

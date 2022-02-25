@@ -6,7 +6,7 @@
 // Controller input mappings
 #define PIN_BUTTON_LEFT     36
 #define PIN_BUTTON_RIGHT    39
-#define PIN_TRIGGER         22
+#define PIN_TRIGGER         4
 
 #define PIN_SDA 21
 #define PIN_SCL 22

@@ -10,6 +10,9 @@ std::unordered_map<InputSource, bool, std::hash<int>> InputManager::inputStates;
 
 // InputTasks
 Task InputManager::exampleButtonResponseTask;
+Task InputManager::leftButtonResponseTask;
+Task InputManager::rightButtonResponseTask;
+Task InputManager::triggerButtonResponseTask;
 
 InputManager::InputManager() {}
 
@@ -38,6 +41,48 @@ void InputManager::initialize(Scheduler *scheduler)
 
     // Assign default value
     inputStates[InputSource::EXAMPLE] = digitalRead(PIN_EXAMPLE);
+
+    
+    // Configure our first button task
+    leftButtonResponseTask.setInterval(TASK_IMMEDIATE);
+    leftButtonResponseTask.setIterations(TASK_ONCE);
+    leftButtonResponseTask.setCallback(&InputManager::leftButtonCallback);
+    (*scheduler).addTask(leftButtonResponseTask);
+
+    // Assign the interrupt for our first button.
+    pinMode(PIN_BUTTON_LEFT, INPUT);
+    attachInterrupt(digitalPinToInterrupt(PIN_BUTTON_LEFT), InputManager::leftButtonInterrupt, CHANGE);
+
+    // Assign default value
+    inputStates[InputSource::BUTTON_LEFT] = digitalRead(PIN_BUTTON_LEFT);
+
+    
+    // Configure our first button task
+    rightButtonResponseTask.setInterval(TASK_IMMEDIATE);
+    rightButtonResponseTask.setIterations(TASK_ONCE);
+    rightButtonResponseTask.setCallback(&InputManager::rightButtonCallback);
+    (*scheduler).addTask(rightButtonResponseTask);
+
+    // Assign the interrupt for our first button.
+    pinMode(PIN_BUTTON_RIGHT, INPUT);
+    attachInterrupt(digitalPinToInterrupt(PIN_BUTTON_RIGHT), InputManager::rightButtonInterrupt, CHANGE);
+
+    // Assign default value
+    inputStates[InputSource::BUTTON_RIGHT] = digitalRead(PIN_BUTTON_RIGHT);
+
+    
+    // Configure our first button task
+    triggerButtonResponseTask.setInterval(TASK_IMMEDIATE);
+    triggerButtonResponseTask.setIterations(TASK_ONCE);
+    triggerButtonResponseTask.setCallback(&InputManager::triggerButtonCallback);
+    (*scheduler).addTask(triggerButtonResponseTask);
+
+    // Assign the interrupt for our first button.
+    pinMode(PIN_TRIGGER, INPUT);
+    attachInterrupt(digitalPinToInterrupt(PIN_TRIGGER), InputManager::triggerButtonInterrupt, CHANGE);
+
+    // Assign default value
+    inputStates[InputSource::BUTTON_TRIGGER] = digitalRead(PIN_TRIGGER);
 
     hasBeenInitialized = true;
 }
@@ -169,4 +214,32 @@ void InputManager::exampleButtonCallback()
     bool state = (digitalRead(PIN_EXAMPLE) == 1);
     // Call the callback thing
     inputHappened(InputSource::EXAMPLE, state);
+}
+
+void InputManager::leftButtonInterrupt() { InputManager::leftButtonResponseTask.restart(); }
+void InputManager::leftButtonCallback()
+{
+    // Fetch the data for this button
+    bool state = (digitalRead(PIN_BUTTON_LEFT) == 1);
+    // Call the callback thing
+    inputHappened(InputSource::BUTTON_LEFT, state);
+}
+
+
+void InputManager::rightButtonInterrupt() { InputManager::rightButtonResponseTask.restart(); }
+void InputManager::rightButtonCallback()
+{
+    // Fetch the data for this button
+    bool state = (digitalRead(PIN_BUTTON_RIGHT) == 1);
+    // Call the callback thing
+    inputHappened(InputSource::BUTTON_RIGHT, state);
+}
+
+void InputManager::triggerButtonInterrupt() { InputManager::triggerButtonResponseTask.restart(); }
+void InputManager::triggerButtonCallback()
+{
+    // Fetch the data for this button
+    bool state = (digitalRead(PIN_TRIGGER) == 1);
+    // Call the callback thing
+    inputHappened(InputSource::BUTTON_TRIGGER, state);
 }

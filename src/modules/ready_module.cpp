@@ -57,7 +57,8 @@ void ReadyModule::onUpdate()
     // Do some dummy thing - listen to a button, I guess, and increment the menu
     // if the button is pressed. If menu reaches a value, reset the task.
     static unsigned long lastButtonPress = 0;
-    bool buttonPressed = !InputManager::getInputState(InputSource::EXAMPLE);
+    int lastMenuPage = currentMenuPage;
+    bool buttonPressed = !InputManager::getInputState(InputSource::BUTTON_TRIGGER);
     if(buttonPressed && (time - lastButtonPress) > 250)
     {
         // Button is pressed - track time, increment value
@@ -67,6 +68,8 @@ void ReadyModule::onUpdate()
 
     // Print out current menu page
     Serial.printf(" currentMenuPage: %d\n", currentMenuPage);
+    if(lastMenuPage != currentMenuPage)
+        DisplayManager::drawSimpleScreen("Page " + String(currentMenuPage), 1);
 
     if(currentMenuPage > 10)
     {

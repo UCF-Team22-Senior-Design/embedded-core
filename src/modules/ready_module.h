@@ -1,5 +1,7 @@
 #include "module.h"
 
+#include "../managers/display_manager.h"
+
 class ReadyModule : public Module
 {
 private:
