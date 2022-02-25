@@ -24,9 +24,11 @@ void ReadyModule::initialize(Scheduler *userScheduler)
 bool ReadyModule::onWake()
 {
     // Reset our menu page to zero;
-    currentMenuPage = 0;
+    currentMenuPage = 1;
 
     Serial.println("I've woked!");
+    //DisplayManager::drawBasicScreen("PAIR", "", "Too Few Targets", "Pair at least 2 targets");
+    DisplayManager::drawFourOptionSelectScreen("Select Game Mode", "Time Trial", "One Shot", "Option3", "Option4", 1, "PAIR", "CONFIRM");
 
     return true;
 }
@@ -52,27 +54,46 @@ void ReadyModule::onUpdate()
     unsigned long deltaTime = time - lastMillis;
     lastMillis = time;
 
-    Serial.printf("Ready Module Update [∆T: %lums]", deltaTime);
+    //Serial.printf("Ready Module Update [∆T: %lums]", deltaTime);
+    /*Serial.printf("%d, %d, %d\n", InputManager::getInputState(InputSource::BUTTON_LEFT), 
+        InputManager::getInputState(InputSource::BUTTON_TRIGGER), 
+        InputManager::getInputState(InputSource::BUTTON_RIGHT));
+    */
 
     // Do some dummy thing - listen to a button, I guess, and increment the menu
     // if the button is pressed. If menu reaches a value, reset the task.
-    static unsigned long lastButtonPress = 0;
+    static unsigned long lastButtonPressLeft = 0;
+    static unsigned long lastButtonPressRight = 0;
+
     int lastMenuPage = currentMenuPage;
-    bool buttonPressed = !InputManager::getInputState(InputSource::BUTTON_TRIGGER);
-    if(buttonPressed && (time - lastButtonPress) > 250)
+    bool leftButtonPressed = !InputManager::getInputState(InputSource::BUTTON_LEFT);
+    if(leftButtonPressed && (time - lastButtonPressLeft) > 250)
     {
         // Button is pressed - track time, increment value
-        lastButtonPress = time;
+        lastButtonPressLeft = time;
+        currentMenuPage--;
+    }
+
+    bool rightButtonPressed = !InputManager::getInputState(InputSource::BUTTON_RIGHT);
+    if(rightButtonPressed && (time - lastButtonPressRight) > 250)
+    {
+        // Button is pressed - track time, increment value
+        lastButtonPressRight = time;
         currentMenuPage++;
     }
 
-    // Print out current menu page
-    Serial.printf(" currentMenuPage: %d\n", currentMenuPage);
-    if(lastMenuPage != currentMenuPage)
-        DisplayManager::drawSimpleScreen("Page " + String(currentMenuPage), 1);
-
-    if(currentMenuPage > 10)
+    // Print out current menu page/
+    //Serial.printf(" currentMenuPage: %d\n", currentMenuPage);
+    if(currentMenuPage > 4)
     {
-        StateManager::setSystemState(SystemState::Ready);
+        currentMenuPage = 1;
     }
+    else if (currentMenuPage < 1) 
+    {
+        currentMenuPage = 4;
+    }
+    
+    if(lastMenuPage != currentMenuPage)
+        //DisplayManager::drawSimpleScreen("Page " + String(currentMenuPage), 1);
+        DisplayManager::drawFourOptionSelectScreen("Select Game Mode", "Time Trial", "One Shot", "Option3", "Option4", currentMenuPage, "PAIR", "CONFIRM");
 }
