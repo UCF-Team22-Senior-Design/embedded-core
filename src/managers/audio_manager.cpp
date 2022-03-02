@@ -1,7 +1,7 @@
 #include "audio_manager.h"
 
 // Initialize our static members
-Task AudioManager::taskAudioUpdate(TASK_MILLISECOND * 10, TASK_FOREVER, &audioUpdate);
+Task AudioManager::taskAudioUpdate(TASK_MILLISECOND, TASK_FOREVER, &audioUpdate);
 AudioFileSourceSPIFFS *AudioManager::in;
 AudioGeneratorWAV *AudioManager::wav;
 AudioOutputI2S *AudioManager::out;
@@ -18,11 +18,19 @@ void AudioManager::initialize(Scheduler *scheduler)
     if(hasBeenInitialized) return;
     hasBeenInitialized = true;
 
+    if(!SPIFFS.begin(true))
+    {
+        Serial.println("An error occurred while initializing spiffs");
+        return;
+    }
+
+
     // Create our audio sources & outputs
-    in  = new AudioFileSourceSPIFFS("audio/owin31.wav");
+    in  = new AudioFileSourceSPIFFS("/audio/owin31.wav");
     wav = new AudioGeneratorWAV();
-    out = new AudioOutputI2S();
-    out->SetGain(0.125);
+    out = new AudioOutputI2S(0, 0);
+    out->SetPinout(26, 25, 19);
+    out->SetGain(0.25);
     wav->begin(in, out);
 
     // Set up our audio playback tasks
@@ -40,6 +48,7 @@ void AudioManager::audioUpdate()
     }
     else
     {
+        Serial.printf("Loop over\n");
         // Disable our audio output when audio is done
         wav->stop();
         // Disable this task
@@ -69,6 +78,8 @@ void AudioManager::playAudio(String fileName)
         wav->stop();
         taskAudioUpdate.disable();
     }
+
+    Serial.printf("Starting audio %s\n", fileName);
 
     // Load the thing as a source
     in = new AudioFileSourceSPIFFS(fileName.c_str());
