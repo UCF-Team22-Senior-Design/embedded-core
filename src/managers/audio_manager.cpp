@@ -18,10 +18,16 @@ void AudioManager::initialize(Scheduler *scheduler)
     if(hasBeenInitialized) return;
     hasBeenInitialized = true;
 
+    if(!SPIFFS.begin(true))
+    {
+        Serial.println("An error occurred while initializing spiffs");
+        return;
+    }
+
     // Create our audio sources & outputs
-    in  = new AudioFileSourceSPIFFS("audio/owin31.wav");
+    in  = new AudioFileSourceSPIFFS("/audio/owin31.wav");
     wav = new AudioGeneratorWAV();
-    out = new AudioOutputI2S();
+    out = new AudioOutputI2S(0, 1);
     out->SetGain(0.125);
     wav->begin(in, out);
 

@@ -6,11 +6,6 @@
 #include "audio_manager.h"
 #include "pwm_manager.h"
 
-#ifdef PLATFORM_CONTROLLER
-    #include "laser_manager.h"
-    #include "display_manager.h"
-#endif
+#include "laser_manager.h"
+#include "display_manager.h"
 
-#ifdef PLATFORM_TARGET
-    #include "lighting_manager.h"
-#endif

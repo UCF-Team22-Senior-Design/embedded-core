@@ -1,9 +1,6 @@
 #include <Arduino.h>
 
 #define PLATFORM_CONTROLLER
-#ifndef PLATFORM_CONTROLLER
-  #define PLATFORM_TARGET
-#endif
 
 /* -- Project Includes -- */
 #include "models/pinouts.h"
@@ -26,14 +23,8 @@ void setup() {
   AudioManager::initialize(&userScheduler);
   
   // Platform-specific managers
-#ifdef PLATFORM_CONTROLLER
   LaserManager::initialize();
   DisplayManager::initialize();
-#endif
-
-#ifdef PLATFORM_TARGET
-  LightingManager::initialize(&userScheduler);
-#endif
 
 
   // Register the gameplay modules to the state manager
@@ -49,6 +40,8 @@ void setup() {
 
   // Change our state to ready
   StateManager::setSystemState(SystemState::Ready);
+
+  AudioManager::playAudio("/audio/owin31.wav");
 
   Serial.println("Setup done.");
 }

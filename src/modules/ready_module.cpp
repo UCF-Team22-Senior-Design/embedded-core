@@ -54,14 +54,11 @@ void ReadyModule::onUpdate()
     unsigned long deltaTime = time - lastMillis;
     lastMillis = time;
 
-    //Serial.printf("Ready Module Update [∆T: %lums]", deltaTime);
-    /*Serial.printf("%d, %d, %d\n", InputManager::getInputState(InputSource::BUTTON_LEFT), 
+    /*Serial.printf("Ready Module Update [∆T: %lums] ", deltaTime);
+    Serial.printf("%d%d%d\n", InputManager::getInputState(InputSource::BUTTON_LEFT), 
         InputManager::getInputState(InputSource::BUTTON_TRIGGER), 
         InputManager::getInputState(InputSource::BUTTON_RIGHT));
-    */
-
-    // Do some dummy thing - listen to a button, I guess, and increment the menu
-    // if the button is pressed. If menu reaches a value, reset the task.
+*/
     static unsigned long lastButtonPressLeft = 0;
     static unsigned long lastButtonPressRight = 0;
 
