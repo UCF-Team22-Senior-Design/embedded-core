@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include "input_manager.h"
+#include "audio_manager.h"
 
 #include "../models/pinouts.h"
 

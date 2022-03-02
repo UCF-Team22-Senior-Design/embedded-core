@@ -27,7 +27,8 @@ void AudioManager::initialize(Scheduler *scheduler)
     // Create our audio sources & outputs
     in  = new AudioFileSourceSPIFFS("/audio/owin31.wav");
     wav = new AudioGeneratorWAV();
-    out = new AudioOutputI2S(0, 1);
+    out = new AudioOutputI2S(0, 0);
+    out->SetPinout(26, 25, 19);
     out->SetGain(0.125);
     wav->begin(in, out);
 
@@ -73,10 +74,13 @@ void AudioManager::playAudio(String fileName)
     if(isAudioPlaying())
     {
         wav->stop();
-        taskAudioUpdate.disable();
     }
 
+    
+    taskAudioUpdate.disable();
+
     // Load the thing as a source
+    in->close();
     in = new AudioFileSourceSPIFFS(fileName.c_str());
     wav->begin(in, out);
 

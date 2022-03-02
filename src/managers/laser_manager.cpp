@@ -36,6 +36,18 @@ void LaserManager::initialize()
 
 void LaserManager::triggerCallback(InputSource source, bool state)
 {
+    static bool lastState = true;
+    static unsigned long lastFired = 0;
+    if(state != lastState) 
+    {
+        lastState = state;
+        if(state == false && millis() - lastFired > 100) {
+            //AudioManager::playAudio("/audio/shoot.wav");
+            lastFired = millis();
+        }
+        
+    }
+
     digitalWrite(PIN_LASER1, !state);
     digitalWrite(PIN_LASER2, !state);
     digitalWrite(PIN_LASER3, !state);
