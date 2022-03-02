@@ -40,6 +40,8 @@ void LightingManager::initialize(Scheduler *scheduler)
 
     // Assign our task to the taskScheduler
     scheduler->addTask(taskLightingUpdate);
+
+    Serial.println("Lighting manager initialized");
 }
 
 /**
@@ -219,6 +221,7 @@ void LightingManager::patternStatic()
         {
             pixels.setPixelColor(i, primaryColor);
         }
+        pixels.show();
     }
 }
 
@@ -234,13 +237,15 @@ void LightingManager::patternBlinkAll()
     {
         pixels.setPixelColor(i, primaryOrSecondary ? primaryColor : secondaryColor);
     }
+
+    pixels.show();
 }
 
 void LightingManager::patternMarchingBlink()
 {
     // PatternMarchingBlink - incrementally switch each LED between primary and
     // secondary colors, per-segment.
-    const unsigned long marchPeriod = 100;
+    const unsigned long marchPeriod = 300;
     static int marchIndex = 0;
 
     // We should march every other marchPeriod
@@ -263,14 +268,17 @@ void LightingManager::patternMarchingBlink()
             int pixelIndex = i * PIXELS_PER_SEGMENT + j;
 
             // If we're before the march index, set the color one way
-            if(j <= marchIndex)
+            if(j <= (marchIndex % PIXELS_PER_SEGMENT))
                 pixels.setPixelColor(pixelIndex, stepColor ? primaryColor : secondaryColor);
             // If we're after the march index, set the color the other way
             else
                 pixels.setPixelColor(pixelIndex, stepColor ? secondaryColor : primaryColor);
         }
     }
-    
+
     // Increment our march index
     marchIndex++;
+    if(marchIndex > 5) marchIndex = 0;
+
+    pixels.show();
 }

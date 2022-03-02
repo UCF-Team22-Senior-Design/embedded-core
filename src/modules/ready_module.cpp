@@ -1,7 +1,5 @@
 #include "ready_module.h"
 
-int ReadyModule::currentMenuPage = 0;
-
 /**
  * @brief Establish our task, bind it to the scheduler.
  * 
@@ -23,12 +21,14 @@ void ReadyModule::initialize(Scheduler *userScheduler)
  */
 bool ReadyModule::onWake()
 {
-    // Reset our menu page to zero;
-    currentMenuPage = 1;
 
     Serial.println("I've woked!");
-    //DisplayManager::drawBasicScreen("PAIR", "", "Too Few Targets", "Pair at least 2 targets");
-    DisplayManager::drawFourOptionSelectScreen("Select Game Mode", "Time Trial", "One Shot", "Option3", "Option4", 1, "PAIR", "CONFIRM");
+    
+  LightingManager::setLoop(true);
+  LightingManager::setPrimaryColor(120, 0, 120);
+  LightingManager::setSecondaryColor(0, 0, 0);
+  LightingManager::setPattern(LightingPattern::MARCHING_BLINK);
+  LightingManager::startPattern();
 
     return true;
 }
@@ -54,46 +54,16 @@ void ReadyModule::onUpdate()
     unsigned long deltaTime = time - lastMillis;
     lastMillis = time;
 
-    //Serial.printf("Ready Module Update [∆T: %lums]", deltaTime);
-    /*Serial.printf("%d, %d, %d\n", InputManager::getInputState(InputSource::BUTTON_LEFT), 
-        InputManager::getInputState(InputSource::BUTTON_TRIGGER), 
-        InputManager::getInputState(InputSource::BUTTON_RIGHT));
-    */
+    //Serial.printf("ReadyModule Update: <ΔT %lums>\n", deltaTime);
 
-    // Do some dummy thing - listen to a button, I guess, and increment the menu
-    // if the button is pressed. If menu reaches a value, reset the task.
-    static unsigned long lastButtonPressLeft = 0;
-    static unsigned long lastButtonPressRight = 0;
-
-    int lastMenuPage = currentMenuPage;
-    bool leftButtonPressed = !InputManager::getInputState(InputSource::BUTTON_LEFT);
-    if(leftButtonPressed && (time - lastButtonPressLeft) > 250)
+    static unsigned long lastShift = 0;
+    static char patternIndex = 0;
+    if(time - lastShift > 5000)
     {
-        // Button is pressed - track time, increment value
-        lastButtonPressLeft = time;
-        currentMenuPage--;
+        lastShift = time;
+        // Change our lighting pattern
+        if(patternIndex > 2) patternIndex = 0;
+        //Serial.printf("Lighting Pattern %d\n", patternIndex);
+        //LightingManager::setPattern(static_cast<LightingPattern>(patternIndex++));
     }
-
-    bool rightButtonPressed = !InputManager::getInputState(InputSource::BUTTON_RIGHT);
-    if(rightButtonPressed && (time - lastButtonPressRight) > 250)
-    {
-        // Button is pressed - track time, increment value
-        lastButtonPressRight = time;
-        currentMenuPage++;
-    }
-
-    // Print out current menu page/
-    //Serial.printf(" currentMenuPage: %d\n", currentMenuPage);
-    if(currentMenuPage > 4)
-    {
-        currentMenuPage = 1;
-    }
-    else if (currentMenuPage < 1) 
-    {
-        currentMenuPage = 4;
-    }
-    
-    if(lastMenuPage != currentMenuPage)
-        //DisplayManager::drawSimpleScreen("Page " + String(currentMenuPage), 1);
-        DisplayManager::drawFourOptionSelectScreen("Select Game Mode", "Time Trial", "One Shot", "Option3", "Option4", currentMenuPage, "PAIR", "CONFIRM");
 }
