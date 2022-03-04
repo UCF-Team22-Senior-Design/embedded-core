@@ -25,7 +25,7 @@ void DisplayManager::initialize()
  *
  * @param text The text to be displayed
  */
-void DisplayManager::drawSimpleScreen(String text, int textSize)
+void DisplayManager::drawSimpleScreen(const char* text, int textSize)
 {
     // Clear the display
     display.clearDisplay();
@@ -45,7 +45,7 @@ void DisplayManager::drawSimpleScreen(String text, int textSize)
     display.display();
 }
 
-void DisplayManager::drawBasicScreen(String option1, String option2, String title, String helperText)
+void DisplayManager::drawBasicScreen(const char* option1, const char* option2, const char* title, const char* helperText)
 {
     // Clear the display
     display.clearDisplay();
@@ -63,7 +63,7 @@ void DisplayManager::drawBasicScreen(String option1, String option2, String titl
     display.display();
 }
 
-void DisplayManager::drawFourOptionSelectScreen(String title, String option1, String option2, String option3, String option4, int activeOption, String printOption1, String printOption2)
+void DisplayManager::drawFourOptionSelectScreen(const char *title, const char *option1, const char *option2, const char *option3, const char *option4, int activeOption, const char *printOption1, const char *printOption2)
 {
     // Clear the display
     display.clearDisplay();
@@ -83,13 +83,13 @@ void DisplayManager::drawFourOptionSelectScreen(String title, String option1, St
     display.display();
 }
 
-void DisplayManager::printCentered(String text, int initialY, bool underlined)
+void DisplayManager::printCentered(const char *text, int initialY, bool underlined)
 {
     // Calculate lateral position for the text
     int16_t finalX, finalY;
     uint16_t finalWidth, finalHeight;
     // Fun little helper function that calculates how big the final text will be
-    display.getTextBounds(text.c_str(), 0, initialY,
+    display.getTextBounds(text, 0, initialY,
                           &finalX, &finalY, &finalWidth, &finalHeight);
 
     // The horizontal position should be the (width of the screen - width of text) / 2
@@ -103,37 +103,37 @@ void DisplayManager::printCentered(String text, int initialY, bool underlined)
     else
     {
         display.setCursor(calculatedHorizontalPosition, initialY);
-        display.print(text.c_str());
+        display.print(text);
     }
 }
 
-void DisplayManager::printUnderlined(String text, int x, int y)
+void DisplayManager::printUnderlined(const char *text, int x, int y)
 {
     const int verticalOffset = 8;
 
     int16_t finalX, finalY;
     uint16_t finalWidth, finalHeight;
 
-    display.getTextBounds(text.c_str(), x, y, &finalX, &finalY, &finalWidth, &finalHeight);
+    display.getTextBounds(text, x, y, &finalX, &finalY, &finalWidth, &finalHeight);
 
     display.setCursor(x, y);
-    display.print(text.c_str());
+    display.print(text);
 
     display.drawFastHLine(finalX, finalY + verticalOffset, finalWidth, SSD1306_WHITE);
 }
 
-void DisplayManager::printOptionLabels(String option1, String option2)
+void DisplayManager::printOptionLabels(const char *option1, const char *option2)
 {
     // Display first option in the bottom left of the screen
     display.setCursor(0, SCREEN_HEIGHT - 8);
-    display.print(option1.c_str());
+    display.print(option1);
 
     // Display second option in the bottom right of the screen
-    display.setCursor(SCREEN_WIDTH - option2.length() * FONT_WIDTH - 8, SCREEN_HEIGHT - 8);
-    display.print(option2.c_str());
+    display.setCursor(SCREEN_WIDTH - strlen(option2) * FONT_WIDTH - 8, SCREEN_HEIGHT - 8);
+    display.print(option2);
 }
 
-void DisplayManager::printTitle(String title)
+void DisplayManager::printTitle(const char *title)
 {
     // Display title centered and underlined at the top of the screen
     display.setCursor(0, 0);
