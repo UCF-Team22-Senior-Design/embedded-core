@@ -9,10 +9,7 @@ std::unordered_map<InputSource, std::vector<InputReceivedCallback>, std::hash<in
 std::unordered_map<InputSource, bool, std::hash<int>> InputManager::inputStates;
 
 // InputTasks
-Task InputManager::exampleButtonResponseTask;
-Task InputManager::leftButtonResponseTask;
-Task InputManager::rightButtonResponseTask;
-Task InputManager::triggerButtonResponseTask;
+Task InputManager::inputCheckerTask;
 
 InputManager::InputManager() {}
 
@@ -29,59 +26,22 @@ void InputManager::initialize(Scheduler *scheduler)
     // Check to see if we've been initialized already.
     if(hasBeenInitialized) return;
 
-    // Configure our first button task
-    exampleButtonResponseTask.setInterval(TASK_IMMEDIATE);
-    exampleButtonResponseTask.setIterations(TASK_ONCE);
-    exampleButtonResponseTask.setCallback(&InputManager::exampleButtonCallback);
-    (*scheduler).addTask(exampleButtonResponseTask);
+    inputCheckerTask.setInterval(TASK_MILLISECOND * 8);
+    inputCheckerTask.setIterations(TASK_FOREVER);
+    inputCheckerTask.setCallback(&InputManager::inputCheckerCallback);
+    (*scheduler).addTask(inputCheckerTask);
+    inputCheckerTask.enable();
 
-    // Assign the interrupt for our first button.
+    // Configure our input pins
     pinMode(PIN_EXAMPLE, INPUT);
-    attachInterrupt(digitalPinToInterrupt(PIN_EXAMPLE), InputManager::exampleButtonInterrupt, CHANGE);
+    pinMode(PIN_BUTTON_LEFT, INPUT);
+    pinMode(PIN_BUTTON_RIGHT, INPUT);
+    pinMode(PIN_TRIGGER, INPUT);
 
     // Assign default value
     inputStates[InputSource::EXAMPLE] = digitalRead(PIN_EXAMPLE);
-
-    
-    // Configure our first button task
-    leftButtonResponseTask.setInterval(TASK_IMMEDIATE);
-    leftButtonResponseTask.setIterations(TASK_ONCE);
-    leftButtonResponseTask.setCallback(&InputManager::leftButtonCallback);
-    (*scheduler).addTask(leftButtonResponseTask);
-
-    // Assign the interrupt for our first button.
-    pinMode(PIN_BUTTON_LEFT, INPUT);
-    attachInterrupt(digitalPinToInterrupt(PIN_BUTTON_LEFT), InputManager::leftButtonInterrupt, CHANGE);
-
-    // Assign default value
     inputStates[InputSource::BUTTON_LEFT] = digitalRead(PIN_BUTTON_LEFT);
-
-    
-    // Configure our first button task
-    rightButtonResponseTask.setInterval(TASK_IMMEDIATE);
-    rightButtonResponseTask.setIterations(TASK_ONCE);
-    rightButtonResponseTask.setCallback(&InputManager::rightButtonCallback);
-    (*scheduler).addTask(rightButtonResponseTask);
-
-    // Assign the interrupt for our first button.
-    pinMode(PIN_BUTTON_RIGHT, INPUT);
-    attachInterrupt(digitalPinToInterrupt(PIN_BUTTON_RIGHT), InputManager::rightButtonInterrupt, CHANGE);
-
-    // Assign default value
     inputStates[InputSource::BUTTON_RIGHT] = digitalRead(PIN_BUTTON_RIGHT);
-
-    
-    // Configure our first button task
-    triggerButtonResponseTask.setInterval(TASK_IMMEDIATE);
-    triggerButtonResponseTask.setIterations(TASK_ONCE);
-    triggerButtonResponseTask.setCallback(&InputManager::triggerButtonCallback);
-    (*scheduler).addTask(triggerButtonResponseTask);
-
-    // Assign the interrupt for our first button.
-    pinMode(PIN_TRIGGER, INPUT);
-    attachInterrupt(digitalPinToInterrupt(PIN_TRIGGER), InputManager::triggerButtonInterrupt, CHANGE);
-
-    // Assign default value
     inputStates[InputSource::BUTTON_TRIGGER] = digitalRead(PIN_TRIGGER);
 
     hasBeenInitialized = true;
@@ -192,54 +152,36 @@ void InputManager::inputHappened(InputSource source, bool state)
     
 }
 
-/**
- * @brief An example ISR - Interrupt Service Routine - that just enables/
- *        restarts the associated task. This way, we catch every event, but also
- *        don't take up too much time from other tasks by accident.
- */
-void InputManager::exampleButtonInterrupt()
+void InputManager::inputCheckerCallback()
 {
-    // Restart / enable the exampleButtonResponseTask
-    InputManager::exampleButtonResponseTask.restart();
-}
+    // Just get the state of each of the inputs and throw them into the dictionary
+    // If they've changed, issue a callback.
 
-/**
- * @brief An example task callback. This runs when the CPU has the time to, and
- *        reads the state of the button before letting the manager know that an
- *        input has changed.
- */
-void InputManager::exampleButtonCallback()
-{
-    // Fetch the data for this button
-    bool state = (digitalRead(PIN_EXAMPLE) == 1);
-    // Call the callback thing
-    inputHappened(InputSource::EXAMPLE, state);
-}
+    bool newInput = digitalRead(PIN_EXAMPLE);
+    if(newInput != inputStates[InputSource::EXAMPLE])
+    {
+        inputStates[InputSource::EXAMPLE] = newInput;
+        inputHappened(InputSource::EXAMPLE, newInput);
+    }
 
-void InputManager::leftButtonInterrupt() { InputManager::leftButtonResponseTask.restart(); }
-void InputManager::leftButtonCallback()
-{
-    // Fetch the data for this button
-    bool state = (digitalRead(PIN_BUTTON_LEFT) == 1);
-    // Call the callback thing
-    inputHappened(InputSource::BUTTON_LEFT, state);
-}
+    newInput = digitalRead(PIN_BUTTON_LEFT);
+    if(newInput != inputStates[InputSource::BUTTON_LEFT])
+    {
+        inputStates[InputSource::BUTTON_LEFT] = newInput;
+        inputHappened(InputSource::BUTTON_LEFT, newInput);
+    }
 
+    newInput = digitalRead(PIN_BUTTON_RIGHT);
+    if(newInput != inputStates[InputSource::BUTTON_RIGHT])
+    {
+        inputStates[InputSource::BUTTON_RIGHT] = newInput;
+        inputHappened(InputSource::BUTTON_RIGHT, newInput);
+    }
 
-void InputManager::rightButtonInterrupt() { InputManager::rightButtonResponseTask.restart(); }
-void InputManager::rightButtonCallback()
-{
-    // Fetch the data for this button
-    bool state = (digitalRead(PIN_BUTTON_RIGHT) == 1);
-    // Call the callback thing
-    inputHappened(InputSource::BUTTON_RIGHT, state);
-}
-
-void InputManager::triggerButtonInterrupt() { InputManager::triggerButtonResponseTask.restart(); }
-void InputManager::triggerButtonCallback()
-{
-    // Fetch the data for this button
-    bool state = (digitalRead(PIN_TRIGGER) == 1);
-    // Call the callback thing
-    inputHappened(InputSource::BUTTON_TRIGGER, state);
+    newInput = digitalRead(PIN_TRIGGER);
+    if(newInput != inputStates[InputSource::BUTTON_TRIGGER])
+    {
+        inputStates[InputSource::BUTTON_TRIGGER] = newInput;
+        inputHappened(InputSource::BUTTON_TRIGGER, newInput);
+    }
 }
