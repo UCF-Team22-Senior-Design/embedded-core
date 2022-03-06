@@ -72,10 +72,10 @@ void DisplayManager::drawFourOptionSelectScreen(const char *title, const char *o
 
     // Print options with selected option underlined
     int offset = 8;
-    printCentered(option1, (FONT_HEIGHT + 2) + offset, (activeOption == 1));
-    printCentered(option2, (FONT_HEIGHT + 2) * 2 + offset, (activeOption == 2));
-    printCentered(option3, (FONT_HEIGHT + 2) * 3 + offset, (activeOption == 3));
-    printCentered(option4, (FONT_HEIGHT + 2) * 4 + offset, (activeOption == 4));
+    printCentered(option1, (FONT_HEIGHT + 2)     + offset, (activeOption == 0));
+    printCentered(option2, (FONT_HEIGHT + 2) * 2 + offset, (activeOption == 1));
+    printCentered(option3, (FONT_HEIGHT + 2) * 3 + offset, (activeOption == 2));
+    printCentered(option4, (FONT_HEIGHT + 2) * 4 + offset, (activeOption == 3));
 
     // Display options
     printOptionLabels(printOption1, printOption2);
