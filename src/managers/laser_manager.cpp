@@ -42,7 +42,7 @@ void LaserManager::triggerCallback(InputSource source, bool state)
     {
         lastState = state;
         if(state == false && millis() - lastFired > 100) {
-            //AudioManager::playAudio("/audio/shoot.wav");
+            AudioManager::playAudio("/audio/shoot.wav");
             lastFired = millis();
         }
         

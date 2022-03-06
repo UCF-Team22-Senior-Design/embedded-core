@@ -48,7 +48,8 @@ void AudioManager::audioUpdate()
     else
     {
         // Disable our audio output when audio is done
-        in->close();
+        //in->close();
+        //out->flush();
         wav->stop();
         // Disable this task
         taskAudioUpdate.disable();
@@ -75,13 +76,15 @@ void AudioManager::playAudio(String fileName)
     if(isAudioPlaying())
     {
         wav->stop();
+        
+        //in->close();
     }
 
     
     taskAudioUpdate.disable();
 
     // Load the thing as a source
-    in->close();
+    //out->flush();
     in = new AudioFileSourceSPIFFS(fileName.c_str());
     wav->begin(in, out);
 
