@@ -8,7 +8,7 @@ const char *ReadyModule::STRING_MENU_OPTION_FOURTH = "Horde";
 const char *ReadyModule::STRING_MENU_BUTTON_LEFT = "PAIR";
 const char *ReadyModule::STRING_MENU_BUTTON_RIGHT = "PLAY";
 
-int ReadyModule::currentMenuPage = 0;
+MenuHelper ReadyModule::menuHelper(STRING_MENU_TITLE, {STRING_MENU_OPTION_FIRST, STRING_MENU_OPTION_SECOND, STRING_MENU_OPTION_THIRD, STRING_MENU_OPTION_FOURTH, "Pair", "Heheheh"}, 0, true);
 
 /**
  * @brief Establish our task, bind it to the scheduler.
@@ -32,10 +32,10 @@ void ReadyModule::initialize(Scheduler *userScheduler)
 bool ReadyModule::onWake()
 {
     // Reset our menu page to zero;
-    currentMenuPage = 1;
+    menuHelper.setIndex(0);
 
     Serial.println("I've woked!");
-    refreshMenu();
+    menuHelper.drawMenu();
 
     return true;
 }
@@ -61,50 +61,34 @@ void ReadyModule::onUpdate()
     unsigned long deltaTime = time - lastMillis;
     lastMillis = time;
 
-    // Serial.printf("Ready Module Update [∆T: %lums] ", deltaTime);
-    static unsigned long lastButtonPressLeft = 0;
-    static unsigned long lastButtonPressRight = 0;
+    /* Serial.printf("Ready Module Update [T: %lums, ∆T: %lums] | %d %d %d\n", time, deltaTime,
+        InputManager::getInputState(InputSource::BUTTON_LEFT),
+        InputManager::getInputState(InputSource::BUTTON_TRIGGER),
+        InputManager::getInputState(InputSource::BUTTON_RIGHT));
+     */
+    static unsigned long lastButtonPress = 0;
 
-    int lastMenuPage = currentMenuPage;
-    bool leftButtonPressed = !InputManager::getInputState(InputSource::BUTTON_LEFT);
-    bool rightButtonPressed = !InputManager::getInputState(InputSource::BUTTON_RIGHT);
+    bool hasChanged = false;
+    bool leftButtonPressed = InputManager::getInputState(InputSource::BUTTON_LEFT);
+    bool rightButtonPressed = InputManager::getInputState(InputSource::BUTTON_RIGHT);
 
     // Decide upon left/right navigation
-    if (leftButtonPressed && (time - lastButtonPressLeft) > 250)
+    if (leftButtonPressed && (time - lastButtonPress) > 250)
     {
         // Button is pressed - track time, increment value
-        lastButtonPressLeft = time;
-        currentMenuPage--;
+        lastButtonPress = time;
+        menuHelper.moveUp();
+        hasChanged = true;
     }
-    else if (rightButtonPressed && (time - lastButtonPressRight) > 250)
+    else if (rightButtonPressed && (time - lastButtonPress) > 250)
     {
         // Button is pressed - track time, increment value
-        lastButtonPressRight = time;
-        currentMenuPage++;
-    }
-
-    // Wrap selection back around
-    if (currentMenuPage > 4)
-    {
-        currentMenuPage = 1;
-    }
-    else if (currentMenuPage < 1)
-    {
-        currentMenuPage = 4;
+        lastButtonPress = time;
+        menuHelper.moveDown();
+        hasChanged = true;
     }
 
     // Update display
-    if (lastMenuPage != currentMenuPage)
-        refreshMenu();
-}
-
-/**
- * @brief Redraws the current menu page with a call to the display manager.
- *  Do not call this every update, as it will cause the screen to flicker -
- *  it is best to only draw every time something changes.
- */
-void ReadyModule::refreshMenu()
-{
-    // Call the display manager function
-    DisplayManager::drawFourOptionSelectScreen(STRING_MENU_TITLE, STRING_MENU_OPTION_FIRST, STRING_MENU_OPTION_SECOND, STRING_MENU_OPTION_THIRD, STRING_MENU_OPTION_FOURTH, currentMenuPage, STRING_MENU_BUTTON_LEFT, STRING_MENU_BUTTON_RIGHT);
+    if(hasChanged)
+        menuHelper.drawMenu();
 }

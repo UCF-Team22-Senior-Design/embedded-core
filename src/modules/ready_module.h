@@ -1,6 +1,7 @@
 #include "module.h"
 
 #include "../managers/display_manager.h"
+#include "helpers/menu_helper.h"
 
 class ReadyModule : public Module
 {
@@ -14,10 +15,7 @@ private:
     static const char* STRING_MENU_BUTTON_LEFT;
     static const char* STRING_MENU_BUTTON_RIGHT;
 
-    static int currentMenuPage;
-    // private runtime utility functions
-
-    static void refreshMenu();
+    static MenuHelper menuHelper;
 public:
     static void initialize(Scheduler *userScheduler);
     static bool onWake();
