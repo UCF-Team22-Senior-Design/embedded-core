@@ -1,7 +1,7 @@
 #include "audio_manager.h"
 
 // Initialize our static members
-Task AudioManager::taskAudioUpdate(TASK_MILLISECOND * 10, TASK_FOREVER, &audioUpdate);
+Task AudioManager::taskAudioUpdate(TASK_MILLISECOND * 5, TASK_FOREVER, &audioUpdate);
 AudioFileSourceSPIFFS *AudioManager::in;
 AudioGeneratorWAV *AudioManager::wav;
 AudioOutputI2S *AudioManager::out;
@@ -48,6 +48,7 @@ void AudioManager::audioUpdate()
     else
     {
         // Disable our audio output when audio is done
+        in->close();
         wav->stop();
         // Disable this task
         taskAudioUpdate.disable();
