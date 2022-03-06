@@ -7,6 +7,11 @@
  */
 void PWMManager::initialize()
 {
+    /*
     ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
     ledcAttachPin(PWM_PIN_3V3, PWM_CHANNEL);
+    */
+
+    pinMode(PWM_PIN_3V3, OUTPUT);
+    digitalWrite(PWM_PIN_3V3, 1);
 }
