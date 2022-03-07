@@ -22,4 +22,6 @@ public:
     static void initialize(Scheduler *scheduler);
     static void playAudio(String fileName);
     static bool isAudioPlaying();
+
+    static void setVolume(float volume);
 };

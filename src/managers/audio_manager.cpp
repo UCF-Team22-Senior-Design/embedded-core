@@ -91,3 +91,9 @@ void AudioManager::playAudio(String fileName)
     // Restart our audio task
     taskAudioUpdate.restart();
 }
+
+void AudioManager::setVolume(float volume)
+{
+    // Todo - serialize this setting
+    out->SetGain(volume);
+}
