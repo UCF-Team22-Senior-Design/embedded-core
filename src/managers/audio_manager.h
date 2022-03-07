@@ -9,6 +9,8 @@
 #include <AudioGeneratorWAV.h>
 #include <AudioFileSOurceSPIFFS.h>
 
+#include "config_manager.h"
+
 class AudioManager
 {
 private:

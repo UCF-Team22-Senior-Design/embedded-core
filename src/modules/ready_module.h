@@ -6,6 +6,7 @@
 class ReadyModule : public Module
 {
 private:
+    static Task moduleTask;
     // Constant, private variables
     static const char* STRING_MENU_TITLE;
     static const char* STRING_MENU_OPTION_FIRST;
@@ -37,10 +38,17 @@ private:
 
     static char menuIndex;
 
-    static void handleMenuSelection();
+    static bool handleMenuSelection();
+    static void handleTriggerPull(InputSource source, bool state);
+    static void handleMenuLeft(InputSource _, bool state);
+    static void handleMenuRight(InputSource _, bool state);
+
+    static void refreshDisplay();
 public:
     static void initialize(Scheduler *userScheduler);
     static bool onWake();
     static void onSleep();
     static void onUpdate();
+
+    static Task* getTask() { return &moduleTask; };
 };

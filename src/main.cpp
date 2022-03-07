@@ -12,9 +12,17 @@ Scheduler userScheduler;
 void setup() {
   // Initialize Serial Communication
   Serial.begin(115200);
-  Serial.println("Hello, world!");
+  Serial.println("[Main] Hello, world!");
 
   // -- Initialize hardware managers-- //
+
+  // Initialize filesystem
+  if(!SPIFFS.begin(true))
+  {
+      Serial.println("[Main] An error occurred while initializing spiffs");
+      return;
+  }
+  ConfigManager::loadData();
 
   // Shared managers
   PWMManager::initialize();
@@ -26,13 +34,13 @@ void setup() {
   LaserManager::initialize();
   DisplayManager::initialize();
 
-
   // Register the gameplay modules to the state manager
   ReadyModule::initialize(&userScheduler);
+  PairingModule::initialize(&userScheduler);
 
   StateManager::registerStateTask(SystemState::Ready,   ReadyModule::getTask());
-/*  StateManager::registerStateTask(SystemState::Pair,    PairModule::getTask());
-  StateManager::registerStateTask(SystemState::Play,    PlayModule::getTask());
+  StateManager::registerStateTask(SystemState::Pair,    PairingModule::getTask());
+/*  StateManager::registerStateTask(SystemState::Play,    PlayModule::getTask());
 #ifdef PLATFORM_CONTROLLER
   StateManager::registerStateTask(SystemState::Results, ResultsModule::getTask());
 #endif

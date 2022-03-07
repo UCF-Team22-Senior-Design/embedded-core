@@ -113,7 +113,13 @@ void InputManager::deregisterInputCallback(InputReceivedCallback callback, Input
     // If we have found it, erase it. Otherwise, it didn't exist.
     if(it != callbackList.end())
     {
+        Serial.println("[InputManager] Removing callback");
         callbackList.erase(it);
+        callbacks[source] = callbackList;
+    }
+    else
+    {
+        Serial.println("[InputManager] Unable to find the callback specified");
     }
 }
 
@@ -146,6 +152,7 @@ void InputManager::inputHappened(InputSource source, bool state)
         // If there are callbacks for this input source, call all of them.
         for(InputReceivedCallback callback : callbacks[source])
         {
+            //Serial.printf("[InputManager] Issuing Callback %d\n", callback);
             callback(source, state);
         }
     }
@@ -156,32 +163,33 @@ void InputManager::inputCheckerCallback()
 {
     // Just get the state of each of the inputs and throw them into the dictionary
     // If they've changed, issue a callback.
+    unsigned long now = millis();
+    const unsigned long delay = 250;
 
-    bool newInput = digitalRead(PIN_EXAMPLE);
-    if(newInput != inputStates[InputSource::EXAMPLE])
-    {
-        inputStates[InputSource::EXAMPLE] = newInput;
-        inputHappened(InputSource::EXAMPLE, newInput);
-    }
-
-    newInput = digitalRead(PIN_BUTTON_LEFT);
-    if(newInput != inputStates[InputSource::BUTTON_LEFT])
+    bool newInput = digitalRead(PIN_BUTTON_LEFT);
+    static unsigned long lastLeftButtonPress = 0;
+    if(newInput != inputStates[InputSource::BUTTON_LEFT] && (now - lastLeftButtonPress) > delay)
     {
         inputStates[InputSource::BUTTON_LEFT] = newInput;
         inputHappened(InputSource::BUTTON_LEFT, newInput);
+        lastLeftButtonPress = now;
     }
 
     newInput = digitalRead(PIN_BUTTON_RIGHT);
-    if(newInput != inputStates[InputSource::BUTTON_RIGHT])
+    static unsigned long lastRightButtonPress = 0;
+    if(newInput != inputStates[InputSource::BUTTON_RIGHT] && (now - lastRightButtonPress) > delay)
     {
         inputStates[InputSource::BUTTON_RIGHT] = newInput;
         inputHappened(InputSource::BUTTON_RIGHT, newInput);
+        lastRightButtonPress = now;
     }
 
     newInput = digitalRead(PIN_TRIGGER);
-    if(newInput != inputStates[InputSource::BUTTON_TRIGGER])
+    static unsigned long lastTriggerButtonPress = 0;
+    if(newInput != inputStates[InputSource::BUTTON_TRIGGER] && (now - lastTriggerButtonPress) > delay)
     {
         inputStates[InputSource::BUTTON_TRIGGER] = newInput;
         inputHappened(InputSource::BUTTON_TRIGGER, newInput);
+        lastTriggerButtonPress = now;
     }
 }

@@ -18,18 +18,16 @@ void AudioManager::initialize(Scheduler *scheduler)
     if(hasBeenInitialized) return;
     hasBeenInitialized = true;
 
-    if(!SPIFFS.begin(true))
-    {
-        Serial.println("An error occurred while initializing spiffs");
-        return;
-    }
+    
 
     // Create our audio sources & outputs
     in  = new AudioFileSourceSPIFFS("/audio/owin31.wav");
     wav = new AudioGeneratorWAV();
     out = new AudioOutputI2S(0, 0);
     out->SetPinout(26, 25, 19);
-    out->SetGain(0.125);
+
+    // Load volume settings from the configuration manager
+    out->SetGain(ConfigManager::configData.volume);
     wav->begin(in, out);
 
     // Set up our audio playback tasks
@@ -94,6 +92,7 @@ void AudioManager::playAudio(String fileName)
 
 void AudioManager::setVolume(float volume)
 {
-    // Todo - serialize this setting
     out->SetGain(volume);
+    ConfigManager::configData.volume = volume;
+    ConfigManager::saveData();
 }

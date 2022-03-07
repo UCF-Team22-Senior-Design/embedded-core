@@ -1,5 +1,6 @@
 #pragma once
 
+#include "config_manager.h"
 #include "state_manager.h"
 #include "network_manager.h"
 #include "input_manager.h"

@@ -1,5 +1,7 @@
 #include "ready_module.h"
 
+Task ReadyModule::moduleTask;
+
 const char *ReadyModule::STRING_MENU_TITLE = "Main Menu";
 const char *ReadyModule::STRING_MENU_OPTION_FIRST = "Select Game Mode";
 const char *ReadyModule::STRING_MENU_OPTION_SECOND = "Pair Targets";
@@ -55,7 +57,11 @@ bool ReadyModule::onWake()
 
     menuIndex = 0;
 
-    Serial.println("I've woked!");
+    InputManager::registerInputCallback(handleTriggerPull, InputSource::BUTTON_TRIGGER);
+    InputManager::registerInputCallback(handleMenuLeft, InputSource::BUTTON_LEFT);
+    InputManager::registerInputCallback(handleMenuRight, InputSource::BUTTON_RIGHT);
+
+    Serial.println("[ReadyModule] I've been asked to wake up");
 
     mainMenuHelper.drawMenu();
 
@@ -69,7 +75,10 @@ bool ReadyModule::onWake()
 void ReadyModule::onSleep()
 {
     // Put to sleep whatever we have been running
-    Serial.println("I sleep");
+    InputManager::deregisterInputCallback(handleTriggerPull, InputSource::BUTTON_TRIGGER);
+    InputManager::deregisterInputCallback(handleMenuLeft, InputSource::BUTTON_LEFT);
+    InputManager::deregisterInputCallback(handleMenuRight, InputSource::BUTTON_RIGHT);
+    Serial.println("[ReadyModule] Being sent to sleep");
 }
 
 /**
@@ -78,110 +87,34 @@ void ReadyModule::onSleep()
  */
 void ReadyModule::onUpdate()
 {
-    static unsigned long lastMillis = millis();
-    unsigned long time = millis();
-    unsigned long deltaTime = time - lastMillis;
-    lastMillis = time;
-
-    /* Serial.printf("Ready Module Update [T: %lums, ∆T: %lums] | %d %d %d\n", time, deltaTime,
-        InputManager::getInputState(InputSource::BUTTON_LEFT),
-        InputManager::getInputState(InputSource::BUTTON_TRIGGER),
-        InputManager::getInputState(InputSource::BUTTON_RIGHT));
-     */
-    static unsigned long lastButtonPress = 0;
-
-    bool hasChanged = false;
-    bool leftButtonPressed = InputManager::getInputState(InputSource::BUTTON_LEFT);
-    bool rightButtonPressed = InputManager::getInputState(InputSource::BUTTON_RIGHT);
-    bool triggerButtonPressed = !InputManager::getInputState(InputSource::BUTTON_TRIGGER);
-
-    // Decide upon left/right navigation
-    if (leftButtonPressed && (time - lastButtonPress) > 250)
-    {
-        // Button is pressed - track time, increment value
-        lastButtonPress = time;
-        switch (menuIndex)
-        {
-        case 0:
-            mainMenuHelper.moveUp();
-            break;
-        case 1:
-            settingsMenuHelper.moveUp();
-            break;
-        case 2:
-            gameModeMenuHelper.moveUp();
-            break;
-        default:
-            break;
-        }
-        hasChanged = true;
-    }
-    else if (rightButtonPressed && (time - lastButtonPress) > 250)
-    {
-        // Button is pressed - track time, increment value
-        lastButtonPress = time;
-        switch (menuIndex)
-        {
-        case 0:
-            mainMenuHelper.moveDown();
-            break;
-        case 1:
-            settingsMenuHelper.moveDown();
-            break;
-        case 2:
-            gameModeMenuHelper.moveDown();
-            break;
-        default:
-            break;
-        }
-        hasChanged = true;
-    }
-
-    if (triggerButtonPressed && (time - lastButtonPress) > 250)
-    {
-        // Trigger is pressed. Perform menu operations based upon what was pressed.
-        handleMenuSelection();
-        hasChanged = true;
-    }
-
-    // Update display
-    if (hasChanged)
-        switch (menuIndex)
-        {
-        case 0:
-            mainMenuHelper.drawMenu();
-            break;
-        case 1:
-            settingsMenuHelper.drawMenu();
-            break;
-        case 2:
-            gameModeMenuHelper.drawMenu();
-            break;
-        default:
-            break;
-        }
+    // I've got nothing.
 }
 
-void ReadyModule::handleMenuSelection()
+bool ReadyModule::handleMenuSelection()
 {
+    Serial.printf("[ReadyModule] Trigger pulled, menu index %d and sub-menu index ", menuIndex);
     // Handle the logic for whatever selection has been made
     switch (menuIndex)
     {
     case 0:
         // Main Menu options logic
+        Serial.printf("%d\n", mainMenuHelper.getMenuIndex());
         switch (mainMenuHelper.getMenuIndex())
         {
         case 0:
             // Select Game Mode (move into game mode menu)
             menuIndex = 2;
+            return true;
             break;
         case 1:
             // Pair Targets (move into pairing state)
             StateManager::setSystemState(SystemState::Pair);
+            return false;
             break;
         case 2:
             // Change Settings (move into settings menu)
             menuIndex = 1;
+            return true;
             break;
         case 3:
             // Move into about page
@@ -191,8 +124,10 @@ void ReadyModule::handleMenuSelection()
             // Do nothing, really.
             break;
         }
+        break;
     case 1:
         // Settings Menu options logic
+        Serial.printf("%d\n", settingsMenuHelper.getMenuIndex());
         switch (settingsMenuHelper.getMenuIndex())
         {
         case 0:
@@ -225,6 +160,7 @@ void ReadyModule::handleMenuSelection()
         case 6:
             // Back
             menuIndex = 0;
+            return true;
             break;
         default:
             break;
@@ -232,6 +168,7 @@ void ReadyModule::handleMenuSelection()
         break;
     case 2:
         // Game Mode options logic
+        Serial.printf("%d\n", gameModeMenuHelper.getMenuIndex());
         switch (gameModeMenuHelper.getMenuIndex())
         {
         case 0:
@@ -249,6 +186,7 @@ void ReadyModule::handleMenuSelection()
         case 4:
             // Back
             menuIndex = 0;
+            return true;
             break;
         default:
             break;
@@ -257,4 +195,80 @@ void ReadyModule::handleMenuSelection()
     default:
         break;
     }
+
+    return true;
+}
+
+void ReadyModule::refreshDisplay()
+{
+    switch (menuIndex)
+    {
+    case 0:
+        mainMenuHelper.drawMenu();
+        break;
+    case 1:
+        settingsMenuHelper.drawMenu();
+        break;
+    case 2:
+        gameModeMenuHelper.drawMenu();
+        break;
+    default:
+        break;
+    }
+}
+
+void ReadyModule::handleTriggerPull(InputSource _, bool state)
+{
+    // The trigger has been pulled. Whoop de doo.
+    if(state) return;
+
+    if(handleMenuSelection())
+        refreshDisplay();
+}
+
+void ReadyModule::handleMenuLeft(InputSource _, bool state)
+{
+    // Only care when there's a change to high
+    if(!state) return;
+
+    // If so, do our navigation logic
+    switch (menuIndex)
+    {
+    case 0:
+        mainMenuHelper.moveUp();
+        break;
+    case 1:
+        settingsMenuHelper.moveUp();
+        break;
+    case 2:
+        gameModeMenuHelper.moveUp();
+        break;
+    default:
+        break;
+    }
+
+    // And refresh the display
+    refreshDisplay();
+}
+
+void ReadyModule::handleMenuRight(InputSource _, bool state)
+{
+    if(!state) return;
+
+    switch (menuIndex)
+    {
+    case 0:
+        mainMenuHelper.moveDown();
+        break;
+    case 1:
+        settingsMenuHelper.moveDown();
+        break;
+    case 2:
+        gameModeMenuHelper.moveDown();
+        break;
+    default:
+        break;
+    }
+
+    refreshDisplay();
 }
