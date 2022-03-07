@@ -12,7 +12,7 @@ private:
     char menuIndex;
     bool paginate;
 public:
-    MenuHelper(const char* menuTitle, std::vector<const char*> menuOptions, char initialMenuIndex = 0, bool paginate = false)
+    MenuHelper(const char* menuTitle, std::vector<const char*> menuOptions, char initialMenuIndex = 0, bool paginate = true)
      : menuTitle{ menuTitle }, menuOptions{ menuOptions }, menuIndex{ initialMenuIndex }, paginate{ paginate }  {};
     void drawMenu();
     void moveUp();
