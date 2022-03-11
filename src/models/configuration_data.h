@@ -9,8 +9,9 @@ public:
     float volume;
 
     // Public-facing methods
-    JsonObject serialize();
+    DynamicJsonDocument serialize();
     ConfigurationData(JsonObject data);
+    // Default Constructor - fill with default assigned values
     ConfigurationData() : 
         volume{ 0.125 } {};
 };

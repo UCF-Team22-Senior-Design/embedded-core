@@ -10,12 +10,12 @@ const char *ReadyModule::STRING_MENU_OPTION_FOURTH = "About";
 
 const char *ReadyModule::STRING_SETTINGS_MENU_TITLE = "Settings";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FIRST = "Mute Audio";
-const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SECOND = "25%% Volume";
-const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_THIRD = "50%% Volume";
-const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FOURTH = "75%% Volume";
+const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SECOND = "12.5% Volume";
+const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_THIRD = "25% Volume";
+const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FOURTH = "50% Volume";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FIFTH = "100%% Volume";
-const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SIXTH = "Reset Settings";
-const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SEVENTH = "Back";
+const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SIXTH = "Reset ALL Settings";
+const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SEVENTH = "Go Back";
 
 const char *ReadyModule::STRING_GAME_MENU_TITLE = "Select Game Mode";
 const char *ReadyModule::STRING_GAME_MENU_OPTION_FIRST = "One-Shot";
@@ -135,18 +135,18 @@ bool ReadyModule::handleMenuSelection()
             AudioManager::setVolume(0.0);
             break;
         case 1:
-            // Audio: 25%
-            AudioManager::setVolume(0.25);
+            // Audio: 12.5%
+            AudioManager::setVolume(0.125);
             AudioManager::playAudio("/audio/shoot.wav");
             break;
         case 2:
-            // Audio 50%
-            AudioManager::setVolume(0.50);
+            // Audio 25%
+            AudioManager::setVolume(0.25);
             AudioManager::playAudio("/audio/shoot.wav");
             break;
         case 3:
-            // Audio 75%
-            AudioManager::setVolume(0.75);
+            // Audio 50%
+            AudioManager::setVolume(0.50);
             AudioManager::playAudio("/audio/shoot.wav");
             break;
         case 4:
@@ -156,6 +156,7 @@ bool ReadyModule::handleMenuSelection()
             break;
         case 5:
             // Reset all configuration settings
+            ConfigManager::resetData();
             break;
         case 6:
             // Back

@@ -22,6 +22,19 @@ void setup() {
       Serial.println("[Main] An error occurred while initializing spiffs");
       return;
   }
+
+  // Verify filesystem is properly configured
+  if (SPIFFS.begin()) {
+      if (SPIFFS.totalBytes() > 0) {
+        Serial.println("[Main] - Spiffs size is set correctly!");
+      } else {
+        Serial.println("[checkFlashConfig] - SPIFFS size was set to 0, please select a SPIFFS size from the \"tools->flash size:\" menu or partition a SPIFFS");
+      }
+    } else {
+      Serial.println("[checkFlashConfig] - Failed to start SPIFFS");
+  }
+
+  // Load our data from the config manager.
   ConfigManager::loadData();
 
   // Shared managers

@@ -1,6 +1,6 @@
 #include "configuration_data.h"
 
-JsonObject ConfigurationData::serialize()
+DynamicJsonDocument ConfigurationData::serialize()
 {
     // Create a JSONObject/Document from our data that
     // we have.
@@ -9,8 +9,10 @@ JsonObject ConfigurationData::serialize()
 
     dataDoc["audio"] = volume;
 
+    serializeJsonPretty(dataDoc, Serial);
+
     // Return a reference to the document
-    return dataDoc.as<JsonObject>();
+    return dataDoc;
 }
 
 ConfigurationData::ConfigurationData(JsonObject data)
