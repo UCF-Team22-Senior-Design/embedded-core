@@ -164,7 +164,7 @@ void InputManager::inputCheckerCallback()
     // Just get the state of each of the inputs and throw them into the dictionary
     // If they've changed, issue a callback.
     unsigned long now = millis();
-    const unsigned long delay = 250;
+    const unsigned long delay = 100;
 
     bool newInput = digitalRead(PIN_BUTTON_LEFT);
     static unsigned long lastLeftButtonPress = 0;

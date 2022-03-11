@@ -23,10 +23,14 @@ bool PairingModule::onWake()
 {
     Serial.println("[PairingModule] I've been awoken");
 
-    InputManager::registerInputCallback(&triggerCallback, InputSource::BUTTON_TRIGGER);
+    // Enable the laser
+    LaserManager::setLaserEnable(true);
+
+    //InputManager::registerInputCallback(&triggerCallback, InputSource::BUTTON_TRIGGER);
+    InputManager::registerInputCallback(&leftMenuCallback, InputSource::BUTTON_LEFT);
 
     // Update display
-    DisplayManager::drawBasicScreen("", "", "Pairing Mode", "Return to menu");
+    DisplayManager::drawBasicScreen("BACK", "", "Pairing Mode", "Trigger to fire");
     return true;
 }
 
@@ -36,7 +40,11 @@ bool PairingModule::onWake()
  */
 void PairingModule::onSleep()
 {
-    InputManager::deregisterInputCallback(&triggerCallback, InputSource::BUTTON_TRIGGER);
+    // Disable the laser
+    LaserManager::setLaserEnable(false);
+
+    //InputManager::deregisterInputCallback(&triggerCallback, InputSource::BUTTON_TRIGGER);
+    InputManager::deregisterInputCallback(&leftMenuCallback, InputSource::BUTTON_LEFT);
     Serial.println("[PairingModule] I'm being put to sleep");
 }
 
@@ -57,4 +65,11 @@ void PairingModule::triggerCallback(InputSource source, bool state)
 
 void PairingModule::onUpdate()
 {
+}
+
+void PairingModule::leftMenuCallback(InputSource _, bool state)
+{
+    // Go back to ready state
+    if(!state) return;
+    StateManager::setSystemState(SystemState::Ready);
 }

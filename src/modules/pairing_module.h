@@ -5,10 +5,10 @@
 class PairingModule : public Module
 {
 private:
-    // Nothing for now - No secrets <3
     static Task moduleTask;
 
     static void triggerCallback(InputSource source, bool state);
+    static void leftMenuCallback(InputSource _, bool state);
 public:
     static void initialize(Scheduler *userScheduler);
     static bool onWake();
