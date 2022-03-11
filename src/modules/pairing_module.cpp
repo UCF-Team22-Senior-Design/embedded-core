@@ -61,6 +61,7 @@ void PairingModule::handlePhotoInput(InputSource _, bool state)
     LightingManager::setPattern(LightingPattern::BLINK_ALL);
     LightingManager::setPrimaryColor(255, 255, 255);
     LightingManager::setSecondaryColor(120, 120, 0);
+    LightingManager::setTimeout(500);
     LightingManager::startPattern();
 
     // Also release a pairing request packet if we're not currently paired
@@ -89,7 +90,7 @@ void PairingModule::handleNetworkMessage(NetworkMessage message)
     Serial.printf("[PairingModule] Got message: %s\n", message.toString().c_str());
 
     // Parse it
-    if(message.getTag() == "PAIR_ACCEPT")
+    if(message.getTag() == "PAIR_ACCEPTED")
     {
         // We've been accepted by the controller. Store its ID, and shift back
         // into ready state

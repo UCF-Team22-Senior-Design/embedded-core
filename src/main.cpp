@@ -52,12 +52,17 @@ void setup() {
 /*StateManager::registerStateTask(SystemState::Play,    PlayModule::getTask());
 */
 
+  // Set our default light state
+
   // Change our state to ready
-  StateManager::setSystemState(SystemState::Ready);
 
   Serial.println("{Main} Setup done.");
 
   AudioManager::playAudio("/audio/owin31.wav");
+
+
+
+  StateManager::setSystemState(SystemState::Ready);
 }
 
 void loop() {

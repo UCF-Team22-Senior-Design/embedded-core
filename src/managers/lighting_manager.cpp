@@ -227,7 +227,7 @@ void LightingManager::patternStatic()
 
 void LightingManager::patternBlinkAll()
 {
-    const unsigned long blinkPeriod = 1000;
+    const unsigned long blinkPeriod = 100;
     // PatternBlinkAll: Blinks all lights on / off every second, between primary
     // and secondary colors
     pixels.clear();

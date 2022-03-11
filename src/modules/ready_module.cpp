@@ -87,6 +87,7 @@ void ReadyModule::handlePhotoInput(InputSource _, bool state)
     // Currently? blink white once then return to our normal color
     LightingManager::stopPattern();
     LightingManager::setPattern(LightingPattern::BLINK_ALL);
+    LightingManager::setTimeout(200);
     LightingManager::setPrimaryColor(255, 255, 255);
     
     bool isPaired = (ConfigManager::configData.controller != 0);
