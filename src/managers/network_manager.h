@@ -36,4 +36,5 @@ public:
     static void deregisterCallback(NetworkMessageCallback callback, String tagFilter);
 
     static uint32_t getNodeTime();
+    static uint32_t getNodeID();
 };

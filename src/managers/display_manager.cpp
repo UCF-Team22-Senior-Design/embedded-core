@@ -53,9 +53,16 @@ void DisplayManager::drawBasicScreen(const char* option1, const char* option2, c
     printTitle(title);
 
     // Display helper text centered in the middle of the screen
-    display.setCursor(0, (SCREEN_HEIGHT - FONT_HEIGHT) / 2);
+    int16_t finalX, finalY;
+    uint16_t finalWidth, finalHeight;
+    // Fun little helper function that calculates how big the final text will be
     display.setTextWrap(true);
+    display.getTextBounds(helperText, 0, 0,
+                          &finalX, &finalY, &finalWidth, &finalHeight);
+
+    display.setCursor(0, (SCREEN_HEIGHT - finalHeight) / 2);
     display.print(helperText);
+    display.setTextWrap(false);
 
     // Display options
     printOptionLabels(option1, option2);
@@ -129,7 +136,7 @@ void DisplayManager::printOptionLabels(const char *option1, const char *option2)
     display.print(option1);
 
     // Display second option in the bottom right of the screen
-    display.setCursor(SCREEN_WIDTH - strlen(option2) * FONT_WIDTH - 8, SCREEN_HEIGHT - 8);
+    display.setCursor(SCREEN_WIDTH - ((strlen(option2) * FONT_WIDTH) + 8), SCREEN_HEIGHT - 8);
     display.print(option2);
 }
 

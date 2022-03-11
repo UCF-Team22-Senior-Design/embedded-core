@@ -15,6 +15,7 @@ private:
 public:
     NetworkMessage(uint32_t from, String payload);
     NetworkMessage(String outTag, String outData, uint32_t currentTime);
+
     String toString();
 
     uint32_t getSender();

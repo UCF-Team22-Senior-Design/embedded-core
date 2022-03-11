@@ -125,6 +125,7 @@ void NetworkManager::deregisterCallback(NetworkMessageCallback callback, String 
     if(it != callbackList.end())
     {
         callbackList.erase(it);
+        callbacks[tagFilter.c_str()] = callbackList;
     }
 }
 
@@ -136,4 +137,9 @@ void NetworkManager::deregisterCallback(NetworkMessageCallback callback, String 
 uint32_t NetworkManager::getNodeTime()
 {
     return mesh.getNodeTime();
+}
+
+uint32_t NetworkManager::getNodeID()
+{
+    return mesh.getNodeId();
 }
