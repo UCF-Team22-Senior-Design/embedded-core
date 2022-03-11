@@ -1,5 +1,7 @@
 #include "ready_module.h"
 
+Task ReadyModule::moduleTask;
+
 /**
  * @brief Establish our task, bind it to the scheduler.
  * 

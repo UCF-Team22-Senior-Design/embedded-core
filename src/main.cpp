@@ -12,9 +12,28 @@ Scheduler userScheduler;
 void setup() {
   // Initialize Serial Communication
   Serial.begin(115200);
-  Serial.println("Hello, world!");
+  Serial.println("{Main} Hello, world!");
 
   // -- Initialize hardware managers-- //
+
+  // Initialize filesystem
+  if(!SPIFFS.begin(true))
+  {
+      Serial.println("{Main} An error occurred while initializing spiffs");
+      return;
+  }
+
+  // Verify filesystem is properly configured
+  if (SPIFFS.begin()) {
+      if (SPIFFS.totalBytes() <= 0) {
+        Serial.println("{Main} SPIFFS size was set to 0. Remember to download the filesystem image.");
+      }
+    } else {
+      Serial.println("{Main} Failed to start spiffs");
+  }
+
+  // Load our data from the config manager.
+  ConfigManager::loadData();
 
   // Shared managers
   PWMManager::initialize();
@@ -29,14 +48,14 @@ void setup() {
   ReadyModule::initialize(&userScheduler);
 
   StateManager::registerStateTask(SystemState::Ready,   ReadyModule::getTask());
-/*  StateManager::registerStateTask(SystemState::Pair,    PairModule::getTask());
+/*  StateManager::registerStateTask(SystemState::Pair,    PairingModule::getTask());
   StateManager::registerStateTask(SystemState::Play,    PlayModule::getTask());
 */
 
   // Change our state to ready
   StateManager::setSystemState(SystemState::Ready);
 
-  Serial.println("Setup done.");
+  Serial.println("{Main} Setup done.");
 
   AudioManager::playAudio("/audio/owin31.wav");
 }

@@ -40,25 +40,8 @@ private:
     static bool hasBeenInitialized;
     static void inputHappened(InputSource source, bool state);
 
-    // ExampleButton Functions
-    static Task exampleButtonResponseTask;
-    static void exampleButtonCallback();
-    static void IRAM_ATTR exampleButtonInterrupt();
-
-    // LeftButton
-    static Task leftButtonResponseTask;
-    static void leftButtonCallback();
-    static void IRAM_ATTR leftButtonInterrupt();
-
-    // RightButton
-    static Task rightButtonResponseTask;
-    static void rightButtonCallback();
-    static void IRAM_ATTR rightButtonInterrupt();
-    
-    // TrigggerButton
-    static Task triggerButtonResponseTask;
-    static void triggerButtonCallback();
-    static void IRAM_ATTR triggerButtonInterrupt();
+    static Task inputCheckerTask;
+    static void inputCheckerCallback();
 public:
     InputManager();
 

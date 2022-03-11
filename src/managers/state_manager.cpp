@@ -20,6 +20,8 @@ void StateManager::setSystemState(SystemState newState)
 {
     SystemState oldState = systemState;
 
+    Serial.printf("[StateManager] Changing from system state %d to %d\n", oldState, newState);
+
     // If we're changing to the same state, ignore it.
     //if(oldState == newState) return;
     
@@ -61,6 +63,7 @@ void StateManager::registerStateTask(SystemState state, Task* task)
     }
 
     // Store the task inside of the stateTasks array
+    Serial.printf("<StateManager> Registering a task to state %d\n", state);
     stateTasks[state] = task;
 }
 
