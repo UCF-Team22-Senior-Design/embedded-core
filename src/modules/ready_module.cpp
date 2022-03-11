@@ -276,7 +276,7 @@ void ReadyModule::refreshDisplay()
     }
 }
 
-void ReadyModule::handleMenuLeft(InputSource _, bool state)
+void ReadyModule::handleMenuRight(InputSource _, bool state)
 {
     // Only care when there's a change to high
     if (!state)
@@ -302,7 +302,7 @@ void ReadyModule::handleMenuLeft(InputSource _, bool state)
     refreshDisplay();
 }
 
-void ReadyModule::handleMenuRight(InputSource _, bool state)
+void ReadyModule::handleMenuLeft(InputSource _, bool state)
 {
     // Only act when changing from low->high
     if (!state)
