@@ -4,8 +4,8 @@ Task ReadyModule::moduleTask;
 
 /**
  * @brief Establish our task, bind it to the scheduler.
- * 
- * @param userScheduler 
+ *
+ * @param userScheduler
  */
 void ReadyModule::initialize(Scheduler *userScheduler)
 {
@@ -24,13 +24,30 @@ void ReadyModule::initialize(Scheduler *userScheduler)
 bool ReadyModule::onWake()
 {
 
-    Serial.println("I've woked!");
-    
-  LightingManager::setLoop(true);
-  LightingManager::setPrimaryColor(120, 0, 120);
-  LightingManager::setSecondaryColor(0, 0, 0);
-  LightingManager::setPattern(LightingPattern::MARCHING_BLINK);
-  LightingManager::startPattern();
+    Serial.println("[ReadyModule] I've been woken from sleep");
+
+    LightingManager::setLoop(false);
+    LightingManager::setClearOnStop(false);
+
+    // Set the lights to be a static green color or a static red color, depending on pairing state
+    bool isPaired = (ConfigManager::configData.controller != 0);
+    if (isPaired)
+    {
+        LightingManager::setPrimaryColor(0, 120, 0);
+    }
+    else
+    {
+        LightingManager::setPrimaryColor(120, 0, 0);
+    }
+
+    LightingManager::setSecondaryColor(0, 0, 0);
+    LightingManager::setPattern(LightingPattern::STATIC);
+    LightingManager::startPattern();
+
+    // Register our callbacks
+    InputManager::registerInputCallback(&handlePhotoInput, InputSource::PHOTOTRANSISTOR);
+    InputManager::registerInputCallback(&handlePairingInput, InputSource::BUTTON_PAIR);
+    NetworkManager::registerCallback(&handleNetworkMessage);
 
     return true;
 }
@@ -42,30 +59,61 @@ bool ReadyModule::onWake()
 void ReadyModule::onSleep()
 {
     // Put to sleep whatever we have been running
-    Serial.println("I sleep");
+    Serial.println("[ReadyModule] I'm being sent to sleep");
+
+    // De-register callbacks
+    InputManager::deregisterInputCallback(&handlePhotoInput, InputSource::PHOTOTRANSISTOR);
+    InputManager::deregisterInputCallback(&handlePairingInput, InputSource::BUTTON_PAIR);
+    NetworkManager::deregisterCallback(&handleNetworkMessage, "NONE");
 }
 
 /**
- * @brief Runs every "frame" - perform fixed update things, such as checking 
+ * @brief Runs every "frame" - perform fixed update things, such as checking
  *        inputs, updating screen, etc.
  */
 void ReadyModule::onUpdate()
 {
-    static unsigned long lastMillis = millis();
-    unsigned long time = millis();
-    unsigned long deltaTime = time - lastMillis;
-    lastMillis = time;
+    // Nothing to doooooo
+}
 
-    //Serial.printf("ReadyModule Update: <ΔT %lums>\n", deltaTime);
+void ReadyModule::handlePhotoInput(InputSource _, bool state)
+{
+    // Only act when the input goes from low to high
+    if (state)
+        return;
 
-    static unsigned long lastShift = 0;
-    static char patternIndex = 0;
-    if(time - lastShift > 5000)
+    Serial.println("[ReadyModule] I've been shot!");
+
+    // Currently? blink white once then return to our normal color
+    LightingManager::stopPattern();
+    LightingManager::setPattern(LightingPattern::BLINK_ALL);
+    LightingManager::setPrimaryColor(255, 255, 255);
+    
+    bool isPaired = (ConfigManager::configData.controller != 0);
+    if (isPaired)
     {
-        lastShift = time;
-        // Change our lighting pattern
-        if(patternIndex > 2) patternIndex = 0;
-        //Serial.printf("Lighting Pattern %d\n", patternIndex);
-        //LightingManager::setPattern(static_cast<LightingPattern>(patternIndex++));
+        LightingManager::setSecondaryColor(0, 120, 0);
     }
+    else
+    {
+        LightingManager::setSecondaryColor(120, 0, 0);
+    }
+    
+    LightingManager::startPattern();
+}
+
+void ReadyModule::handlePairingInput(InputSource _, bool state)
+{
+    // Only act when the input goes from high to low
+    if (!state)
+        return;
+
+    // Shift into the pairing state
+    StateManager::setSystemState(SystemState::Pair);
+}
+
+void ReadyModule::handleNetworkMessage(NetworkMessage message)
+{
+    // Just print it out - in the futue, jump into the game mode when we recieve a gamemode message
+    Serial.printf("[ReadyModule] Got message: %s\n", message.toString().c_str());
 }

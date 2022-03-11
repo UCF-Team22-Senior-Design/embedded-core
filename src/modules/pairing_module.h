@@ -1,8 +1,9 @@
 #include "module.h"
 
 #include "../managers/lighting_manager.h"
+#include "../managers/config_manager.h"
 
-class ReadyModule : public Module
+class PairingModule : public Module
 {
 private:
     static Task moduleTask;

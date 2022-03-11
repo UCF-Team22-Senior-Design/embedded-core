@@ -8,6 +8,7 @@ DynamicJsonDocument ConfigurationData::serialize()
     DynamicJsonDocument dataDoc(1024);
 
     // Implement our data to save
+    dataDoc["controller"] = controller;
 
 
     serializeJsonPretty(dataDoc, Serial);
@@ -20,6 +21,5 @@ ConfigurationData::ConfigurationData(JsonObject data)
 {
     // We have a data, loaded from memory.
     // Load our data back from it
-
-    // Implement loading back our data
+    controller = static_cast<uint32_t>(data["controller"]);
 }

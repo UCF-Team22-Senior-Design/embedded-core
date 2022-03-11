@@ -43,13 +43,13 @@ void setup() {
   
   LightingManager::initialize(&userScheduler);
 
-
   // Register the gameplay modules to the state manager
   ReadyModule::initialize(&userScheduler);
+  PairingModule::initialize(&userScheduler);
 
   StateManager::registerStateTask(SystemState::Ready,   ReadyModule::getTask());
-/*  StateManager::registerStateTask(SystemState::Pair,    PairingModule::getTask());
-  StateManager::registerStateTask(SystemState::Play,    PlayModule::getTask());
+  StateManager::registerStateTask(SystemState::Pair,    PairingModule::getTask());
+/*StateManager::registerStateTask(SystemState::Play,    PlayModule::getTask());
 */
 
   // Change our state to ready
