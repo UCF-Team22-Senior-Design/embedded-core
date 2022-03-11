@@ -29,6 +29,7 @@ bool PairingModule::onWake()
     // Register our input callbacks
     //InputManager::registerInputCallback(&triggerCallback, InputSource::BUTTON_TRIGGER);
     InputManager::registerInputCallback(&leftMenuCallback, InputSource::BUTTON_LEFT);
+    InputManager::registerInputCallback(&rightMenuCallback, InputSource::BUTTON_RIGHT);
     NetworkManager::registerCallback(networkMessageCallback);
 
     // Update display
@@ -48,6 +49,7 @@ void PairingModule::onSleep()
     // Disable our pairing callbacks
     //InputManager::deregisterInputCallback(&triggerCallback, InputSource::BUTTON_TRIGGER);
     InputManager::deregisterInputCallback(&leftMenuCallback, InputSource::BUTTON_LEFT);
+    InputManager::deregisterInputCallback(&rightMenuCallback, InputSource::BUTTON_RIGHT);
     NetworkManager::deregisterCallback(networkMessageCallback, "NONE");
 
     // Send the "end pairing" message to all clients
@@ -81,6 +83,22 @@ void PairingModule::leftMenuCallback(InputSource _, bool state)
     // Go back to ready state
     if(!state) return;
     StateManager::setSystemState(SystemState::Ready);
+}
+
+void PairingModule::rightMenuCallback(InputSource _, bool state)
+{
+    // Only act on the down-press of the buttons
+    if(!state) return;
+
+    // No point in doing this work if there are no targets to clear.
+    if(ConfigManager::configData.targets.size() <= 0) return;
+    
+    // Unpair all targets
+    ConfigManager::configData.targets.clear();
+    // Save this change
+    ConfigManager::saveData();
+    // Refresh display
+    drawScreen("Shoot a target in \n'Pairing Mode' to \npair it to this \ncontroller");
 }
 
 void PairingModule::networkMessageCallback(NetworkMessage networkMessage)

@@ -12,26 +12,24 @@ Scheduler userScheduler;
 void setup() {
   // Initialize Serial Communication
   Serial.begin(115200);
-  Serial.println("[Main] Hello, world!");
+  Serial.println("{Main} Hello, world!");
 
   // -- Initialize hardware managers-- //
 
   // Initialize filesystem
   if(!SPIFFS.begin(true))
   {
-      Serial.println("[Main] An error occurred while initializing spiffs");
+      Serial.println("{Main} An error occurred while initializing spiffs");
       return;
   }
 
   // Verify filesystem is properly configured
   if (SPIFFS.begin()) {
-      if (SPIFFS.totalBytes() > 0) {
-        Serial.println("[Main] - Spiffs size is set correctly!");
-      } else {
-        Serial.println("[checkFlashConfig] - SPIFFS size was set to 0, please select a SPIFFS size from the \"tools->flash size:\" menu or partition a SPIFFS");
+      if (SPIFFS.totalBytes() <= 0) {
+        Serial.println("{Main} SPIFFS size was set to 0. Remember to download the filesystem image.");
       }
     } else {
-      Serial.println("[checkFlashConfig] - Failed to start SPIFFS");
+      Serial.println("{Main} Failed to start spiffs");
   }
 
   // Load our data from the config manager.
@@ -62,9 +60,7 @@ void setup() {
   // Change our state to ready
   StateManager::setSystemState(SystemState::Ready);
 
-  //AudioManager::playAudio("/audio/owin31.wav");
-
-  Serial.println("Setup done.");
+  Serial.println("{Main} Setup done.");
 }
 
 void loop() {

@@ -26,6 +26,8 @@ void NetworkManager::initialize(Scheduler* scheduler)
     // Configure our wireless mesh
     mesh.init(DEFAULT_MESH_PREFIX, DEFAULT_MESH_PASSWORD, scheduler, MESH_PORT);
     mesh.onReceive(&NetworkManager::receivedMessage);
+
+    Serial.printf("<NetworkManager> Network initialized with prefix %s, password %s, and port %d\n", DEFAULT_MESH_PREFIX, DEFAULT_MESH_PASSWORD, MESH_PORT);
 }
 
 /**

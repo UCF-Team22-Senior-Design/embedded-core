@@ -33,6 +33,8 @@ void AudioManager::initialize(Scheduler *scheduler)
     // Set up our audio playback tasks
     (*scheduler).addTask(taskAudioUpdate);
     taskAudioUpdate.enable();
+
+    Serial.println("<AudioManager> Initialization Complete");
 }
 
 void AudioManager::audioUpdate()
@@ -88,6 +90,8 @@ void AudioManager::playAudio(String fileName)
 
     // Restart our audio task
     taskAudioUpdate.restart();
+
+    Serial.printf("<AudioManager> Beginning playback of %s\n", fileName.c_str());
 }
 
 void AudioManager::setVolume(float volume)
@@ -95,4 +99,6 @@ void AudioManager::setVolume(float volume)
     out->SetGain(volume);
     ConfigManager::configData.volume = volume;
     ConfigManager::saveData();
+
+    Serial.printf("<AudioManager> Audio has been changed to %f\n", volume);
 }

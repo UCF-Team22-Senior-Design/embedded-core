@@ -12,7 +12,7 @@ void ConfigManager::resetData()
     configData = ConfigurationData();
 
     // Inform the debugger <3
-    Serial.println("[ConfigManager] Resetting and rebooting all data on device");
+    Serial.println("<ConfigManager> Resetting and rebooting all data on device");
 
     // Save this data
     saveData();
@@ -34,12 +34,12 @@ void ConfigManager::saveData()
     File file = SPIFFS.open(CONFIG_FILE_PATH, FILE_WRITE);
     if (!file)
     {
-        Serial.println("[ConfigManager] Failed to open configuration file for writing");
+        Serial.println("<ConfigManager> Failed to open configuration file for writing");
         return;
     }
     else
     {
-        Serial.printf("[ConfigManager] Opened file at path %s\n", CONFIG_FILE_PATH);
+        Serial.printf("<ConfigManager> Opened file at path %s\n", CONFIG_FILE_PATH);
     }
 
     // Second: Write to the file using ArduinoJson's serialization stuff
@@ -48,11 +48,11 @@ void ConfigManager::saveData()
     // Let's see if this json object has anything in it
     if (serializeJson(doc, file))
     {
-        Serial.println("[ConfigManager] Saved configuration data to fs");
+        Serial.println("<ConfigManager> Saved configuration data to fs");
     }
     else
     {
-        Serial.println("[ConfigManager] Failed to save configuration data");
+        Serial.println("<ConfigManager> Failed to save configuration data");
     }
 
     file.close();
@@ -69,7 +69,7 @@ void ConfigManager::loadData()
     if (!file || file.isDirectory())
     {
         // We were unable to open the file to load configuration data
-        Serial.println("[ConfigManager] Failed to open configuration file for reading");
+        Serial.println("<ConfigManager> Failed to open configuration file for reading");
         return;
     }
 
@@ -79,10 +79,9 @@ void ConfigManager::loadData()
 
     if (error)
     {
-        Serial.println("[ConfigManager] Error occured during deserialization");
-        Serial.printf("[ConfigManager] Error: ");
-        Serial.println(error.c_str());
-        Serial.printf("[ConfigManager] File Content: %s\n", file.readString().c_str());
+        Serial.println("<ConfigManager> Error occured during deserialization");
+        Serial.printf("<ConfigManager> Error: %s", error.c_str());
+        Serial.printf("<ConfigManager> File Content: %s\n", file.readString().c_str());
         file.close();
         return;
     }
@@ -92,11 +91,11 @@ void ConfigManager::loadData()
     {
         configData = ConfigurationData(doc.as<JsonObject>());
         // Data is now loaded!
-        Serial.println("[ConfigManager] Configuration data loaded from flash storage successfully");
+        Serial.println("<ConfigManager Configuration data loaded from flash storage successfully");
     }
     catch (const std::exception e)
     {
-        Serial.printf("[ConfigManager] Failed to deserialie configuration data: %s\n", e.what());
+        Serial.printf("<ConfigManager> Failed to deserialie configuration data: %s\n", e.what());
     }
 
     file.close();

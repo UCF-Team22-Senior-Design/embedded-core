@@ -113,13 +113,12 @@ void InputManager::deregisterInputCallback(InputReceivedCallback callback, Input
     // If we have found it, erase it. Otherwise, it didn't exist.
     if(it != callbackList.end())
     {
-        Serial.println("[InputManager] Removing callback");
         callbackList.erase(it);
         callbacks[source] = callbackList;
     }
     else
     {
-        Serial.println("[InputManager] Unable to find the callback specified");
+        Serial.printf("<InputManager> Unable to find the callback specified for source %d\n", source);
     }
 }
 

@@ -12,7 +12,7 @@ void DisplayManager::initialize()
     // Initialize display hardware
     if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
     {
-        Serial.printf("SSD1306 allocation failed");
+        Serial.printf("<DisplayManager> SSD1306 allocation failed");
     }
     else
     {

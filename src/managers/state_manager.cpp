@@ -63,7 +63,7 @@ void StateManager::registerStateTask(SystemState state, Task* task)
     }
 
     // Store the task inside of the stateTasks array
-    Serial.printf("[StateManager] Registering a task to state %d\n", state);
+    Serial.printf("<StateManager> Registering a task to state %d\n", state);
     stateTasks[state] = task;
 }
 
