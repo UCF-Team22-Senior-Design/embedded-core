@@ -25,10 +25,12 @@ private:
 
     static bool hasBeenInitialized;
     static LaserMode laserMode;
+    static bool enabled;
     static Task taskLaserDimmer;
 
     static const unsigned long PULSE_LENGTH = 10;
 public:
     static void initialize(Scheduler* userScheduler);
     static void setLaserMode(LaserMode newMode);
+    static void setLaserEnable(bool newEnable);
 };

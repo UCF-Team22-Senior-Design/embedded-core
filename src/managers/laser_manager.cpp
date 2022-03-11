@@ -8,6 +8,7 @@ bool LaserManager::hasBeenInitialized = false;
 Task LaserManager::taskLaserDimmer(TASK_MILLISECOND *PULSE_LENGTH, TASK_ONCE, &LaserManager::dimLaserCallback);
 
 LaserMode LaserManager::laserMode = LaserMode::PULSE_ON_TRIGGER;
+bool LaserManager::enabled = false;
 
 /**
  * @brief A function to run once at the start of execution, which establishes
@@ -41,6 +42,8 @@ void LaserManager::initialize(Scheduler *userScheduler)
 
 void LaserManager::triggerCallback(InputSource source, bool state)
 {
+    if(!enabled) return;
+
     switch (laserMode)
     {
     // If the laser is set to follow the trigger's behavior, then match the inverse of the current state
@@ -86,6 +89,12 @@ void LaserManager::setLaserMode(LaserMode newLaserMode)
     // Reset lasers
     setLaserState(false);
 
+    // Store the new mode
+    laserMode = newLaserMode;
+
+    // If the laser is disabled, we don't have to visually change modes
+    if(!enabled) return;
+
     // Change to the new laser mode
     switch (newLaserMode)
     {
@@ -104,8 +113,6 @@ void LaserManager::setLaserMode(LaserMode newLaserMode)
         setLaserState(!InputManager::getInputState(InputSource::BUTTON_TRIGGER));
         break;
     }
-
-    laserMode = newLaserMode;
 }
 
 void LaserManager::dimLaserCallback()
@@ -119,4 +126,38 @@ void LaserManager::setLaserState(bool on)
     digitalWrite(PIN_LASER1, on);
     digitalWrite(PIN_LASER2, on);
     digitalWrite(PIN_LASER3, on);
+}
+
+void LaserManager::setLaserEnable(bool newEnable)
+{
+    // Store the new state
+    enabled = newEnable;
+    
+    if(!enabled)
+    {
+        // We're to disable the laser. Turn off whatever we currently have on, disable the dimmer, and 
+        // break;
+        setLaserState(false);
+        taskLaserDimmer.disable();
+        return;
+    }
+
+    // We're to enable the laser. Set it to match whatever mode is desired.
+    switch (laserMode)
+    {
+    case OFF:
+        // Lasers are already off
+        break;
+    case ON:
+        // Turn on the lasers
+        setLaserState(true);
+        break;
+    case PULSE_ON_TRIGGER:
+        // Don't have to do anything - behavior happens on trigger
+        break;
+    case FOLLOWS_TRIGGER:
+        // Set the laser state to the current trigger state
+        setLaserState(!InputManager::getInputState(InputSource::BUTTON_TRIGGER));
+        break;
+    }
 }
