@@ -31,6 +31,10 @@ private:
     static const char* STRING_SETTINGS_MENU_OPTION_FIFTH;
     static const char* STRING_SETTINGS_MENU_OPTION_SIXTH;
     static const char* STRING_SETTINGS_MENU_OPTION_SEVENTH;
+    static const char* STRING_SETTINGS_MENU_OPTION_EIGHTH;
+    static const char* STRING_SETTINGS_MENU_OPTION_NINTH;
+    static const char* STRING_SETTINGS_MENU_OPTION_TENTH;
+    static const char* STRING_SETTINGS_MENU_OPTION_ELEVENTH;
 
     static const char* STRING_GAME_MENU_TITLE;
     static const char* STRING_GAME_MENU_OPTION_FIRST;

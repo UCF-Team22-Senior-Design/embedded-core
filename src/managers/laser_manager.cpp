@@ -5,6 +5,9 @@
 //
 // C++ is stupid sometimes.
 bool LaserManager::hasBeenInitialized = false;
+Task LaserManager::taskLaserDimmer(TASK_MILLISECOND *PULSE_LENGTH, TASK_ONCE, &LaserManager::dimLaserCallback);
+
+LaserMode LaserManager::laserMode = LaserMode::PULSE_ON_TRIGGER;
 
 /**
  * @brief A function to run once at the start of execution, which establishes
@@ -12,10 +15,11 @@ bool LaserManager::hasBeenInitialized = false;
  *        variable keeps track of whether it has been initalized or not, so you
  *        cannot call this twice.
  */
-void LaserManager::initialize()
+void LaserManager::initialize(Scheduler *userScheduler)
 {
     // Check to see if we've been initialized already.
-    if(hasBeenInitialized) return;
+    if (hasBeenInitialized)
+        return;
 
     // Register the laser pins as output
     pinMode(PIN_LASER1, OUTPUT);
@@ -23,12 +27,13 @@ void LaserManager::initialize()
     pinMode(PIN_LASER3, OUTPUT);
 
     // Set the laser's state to off
-    digitalWrite(PIN_LASER1, 0);
-    digitalWrite(PIN_LASER2, 0);
-    digitalWrite(PIN_LASER3, 0);
+    setLaserState(false);
 
     // Register a callback for the input manager, listening to the trigger
     InputManager::registerInputCallback(LaserManager::triggerCallback, InputSource::BUTTON_TRIGGER);
+
+    // Register our task to the scheduler
+    (*userScheduler).addTask(taskLaserDimmer);
 
     // Initialization complete
     hasBeenInitialized = true;
@@ -36,19 +41,82 @@ void LaserManager::initialize()
 
 void LaserManager::triggerCallback(InputSource source, bool state)
 {
-    static bool lastState = true;
-    static unsigned long lastFired = 0;
-    if(state != lastState) 
+    switch (laserMode)
     {
-        lastState = state;
-        if(state == false && millis() - lastFired > 100) {
+    // If the laser is set to follow the trigger's behavior, then match the inverse of the current state
+    // and play the audio when the trigger is pulled.
+    case FOLLOWS_TRIGGER:
+        setLaserState(!state);
+
+        // If the trigger has been pulled (goes low), fire the laser sound effect
+        if (state == false)
+        {
             AudioManager::playAudio("/audio/shoot.wav");
-            lastFired = millis();
         }
-        
+        return;
+    // If the laser is set to ignore the trigger's behavior, do nothing
+    case OFF:
+    case ON:
+        return;
+    // If the laser is set to pulse on trigger, turn on the laser (if appropriate) and enableDelayed the
+    // dimmer task
+    case PULSE_ON_TRIGGER:
+        // Only act on the trigger pull
+        if (state)
+            break;
+
+        // Set the laser's mode high
+        setLaserState(true);
+
+        // EnableDelayed our dimmer task
+        taskLaserDimmer.restartDelayed(TASK_MILLISECOND * PULSE_LENGTH);
+
+        // Play audio
+        AudioManager::playAudio("/audio/shoot.wav");
+    default:
+        return;
+    }
+}
+
+void LaserManager::setLaserMode(LaserMode newLaserMode)
+{
+    // Disable the dimmer task
+    taskLaserDimmer.disable();
+
+    // Reset lasers
+    setLaserState(false);
+
+    // Change to the new laser mode
+    switch (newLaserMode)
+    {
+    case OFF:
+        // Lasers are already off
+        break;
+    case ON:
+        // Turn on the lasers
+        setLaserState(true);
+        break;
+    case PULSE_ON_TRIGGER:
+        // Don't have to do anything - behavior happens on trigger
+        break;
+    case FOLLOWS_TRIGGER:
+        // Set the laser state to the current trigger state
+        setLaserState(!InputManager::getInputState(InputSource::BUTTON_TRIGGER));
+        break;
     }
 
-    digitalWrite(PIN_LASER1, !state);
-    digitalWrite(PIN_LASER2, !state);
-    digitalWrite(PIN_LASER3, !state);
+    laserMode = newLaserMode;
+}
+
+void LaserManager::dimLaserCallback()
+{
+    // Set our laser's state to low
+    setLaserState(false);
+}
+
+void LaserManager::setLaserState(bool on)
+{
+    digitalWrite(PIN_LASER1, on);
+    digitalWrite(PIN_LASER2, on);
+    digitalWrite(PIN_LASER3, on);
 }

@@ -44,7 +44,7 @@ void setup() {
   AudioManager::initialize(&userScheduler);
   
   // Platform-specific managers
-  LaserManager::initialize();
+  LaserManager::initialize(&userScheduler);
   DisplayManager::initialize();
 
   // Register the gameplay modules to the state manager

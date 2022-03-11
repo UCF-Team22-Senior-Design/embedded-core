@@ -14,8 +14,12 @@ const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SECOND = "12.5% Volume";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_THIRD = "25% Volume";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FOURTH = "50% Volume";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FIFTH = "100% Volume";
-const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SIXTH = "Reset ALL Settings";
-const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SEVENTH = "Go Back";
+const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SIXTH = "Laser On";
+const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SEVENTH = "Laser Off";
+const char* ReadyModule::STRING_SETTINGS_MENU_OPTION_EIGHTH = "Laser Pulse";
+const char* ReadyModule::STRING_SETTINGS_MENU_OPTION_NINTH = "Laser Follow";
+const char* ReadyModule::STRING_SETTINGS_MENU_OPTION_TENTH = "Reset ALL Settings";
+const char* ReadyModule::STRING_SETTINGS_MENU_OPTION_ELEVENTH = "Go Back";
 
 const char *ReadyModule::STRING_GAME_MENU_TITLE = "Select Game Mode";
 const char *ReadyModule::STRING_GAME_MENU_OPTION_FIRST = "One-Shot";
@@ -25,7 +29,7 @@ const char *ReadyModule::STRING_GAME_MENU_OPTION_FOURTH = "Time Trial";
 const char *ReadyModule::STRING_GAME_MENU_OPTION_FIFTH = "Back";
 
 MenuHelper ReadyModule::mainMenuHelper(STRING_MENU_TITLE, {STRING_MENU_OPTION_FIRST, STRING_MENU_OPTION_SECOND, STRING_MENU_OPTION_THIRD, STRING_MENU_OPTION_FOURTH});
-MenuHelper ReadyModule::settingsMenuHelper(STRING_SETTINGS_MENU_TITLE, {STRING_SETTINGS_MENU_OPTION_FIRST, STRING_SETTINGS_MENU_OPTION_SECOND, STRING_SETTINGS_MENU_OPTION_THIRD, STRING_SETTINGS_MENU_OPTION_FOURTH, STRING_SETTINGS_MENU_OPTION_FIFTH, STRING_SETTINGS_MENU_OPTION_SIXTH, STRING_SETTINGS_MENU_OPTION_SEVENTH});
+MenuHelper ReadyModule::settingsMenuHelper(STRING_SETTINGS_MENU_TITLE, {STRING_SETTINGS_MENU_OPTION_FIRST, STRING_SETTINGS_MENU_OPTION_SECOND, STRING_SETTINGS_MENU_OPTION_THIRD, STRING_SETTINGS_MENU_OPTION_FOURTH, STRING_SETTINGS_MENU_OPTION_FIFTH, STRING_SETTINGS_MENU_OPTION_SIXTH, STRING_SETTINGS_MENU_OPTION_SEVENTH, STRING_SETTINGS_MENU_OPTION_EIGHTH, STRING_SETTINGS_MENU_OPTION_NINTH, STRING_SETTINGS_MENU_OPTION_TENTH, STRING_SETTINGS_MENU_OPTION_ELEVENTH});
 MenuHelper ReadyModule::gameModeMenuHelper(STRING_GAME_MENU_TITLE, {STRING_GAME_MENU_OPTION_FIRST, STRING_GAME_MENU_OPTION_SECOND, STRING_GAME_MENU_OPTION_THIRD, STRING_GAME_MENU_OPTION_FOURTH, STRING_GAME_MENU_OPTION_FIFTH});
 
 ReadyModuleMenuState ReadyModule::menuIndex = ReadyModuleMenuState::MAIN;
@@ -196,10 +200,26 @@ bool ReadyModule::handleSettingMenuSelection()
         AudioManager::playAudio("/audio/shoot.wav");
         break;
     case 5:
+        // Laser On
+        LaserManager::setLaserMode(LaserMode::ON);
+        break;
+    case 6:
+        // Laser Off
+        LaserManager::setLaserMode(LaserMode::OFF);
+        break;
+    case 8:
+        // laser Follow Trigger
+        LaserManager::setLaserMode(LaserMode::FOLLOWS_TRIGGER);
+        break;
+    case 7:
+        // Laser Pulse
+        LaserManager::setLaserMode(LaserMode::PULSE_ON_TRIGGER);
+        break;
+    case 9:
         // Reset all configuration settings
         ConfigManager::resetData();
         break;
-    case 6:
+    case 10:
         // Back
         menuIndex = ReadyModuleMenuState::MAIN;
         return true;
@@ -234,6 +254,8 @@ bool ReadyModule::handleGameMenuSelection()
     default:
         break;
     }
+
+    return false;
 }
 
 void ReadyModule::refreshDisplay()
