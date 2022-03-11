@@ -42,7 +42,12 @@ void LaserManager::initialize(Scheduler *userScheduler)
 
 void LaserManager::triggerCallback(InputSource source, bool state)
 {
-    if(!enabled) return;
+    if(!enabled && !state)
+    {
+        // Play click audio
+        AudioManager::playAudio("/audio/click.wav");
+        return;
+    };
 
     switch (laserMode)
     {
