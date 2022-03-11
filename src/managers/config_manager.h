@@ -15,6 +15,7 @@ public:
     // Load long-lasting configuration data to/from file
     static void saveData();
     static void loadData();
+    static void resetData();
 
     static ConfigurationData configData;
 };
