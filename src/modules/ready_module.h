@@ -3,6 +3,13 @@
 #include "../managers/display_manager.h"
 #include "helpers/menu_helper.h"
 
+enum ReadyModuleMenuState
+{
+    MAIN,
+    SETTINGS,
+    GAME
+};
+
 class ReadyModule : public Module
 {
 private:
@@ -36,9 +43,13 @@ private:
     static MenuHelper settingsMenuHelper;
     static MenuHelper gameModeMenuHelper;
 
-    static char menuIndex;
+    static ReadyModuleMenuState menuIndex;
 
     static bool handleMenuSelection();
+    static bool handleMainMenuSelection();
+    static bool handleSettingMenuSelection();
+    static bool handleGameMenuSelection();
+    
     static void handleTriggerPull(InputSource source, bool state);
     static void handleMenuLeft(InputSource _, bool state);
     static void handleMenuRight(InputSource _, bool state);

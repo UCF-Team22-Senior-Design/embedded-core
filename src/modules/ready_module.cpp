@@ -13,7 +13,7 @@ const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FIRST = "Mute Audio";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SECOND = "12.5% Volume";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_THIRD = "25% Volume";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FOURTH = "50% Volume";
-const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FIFTH = "100%% Volume";
+const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FIFTH = "100% Volume";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SIXTH = "Reset ALL Settings";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SEVENTH = "Go Back";
 
@@ -28,7 +28,7 @@ MenuHelper ReadyModule::mainMenuHelper(STRING_MENU_TITLE, {STRING_MENU_OPTION_FI
 MenuHelper ReadyModule::settingsMenuHelper(STRING_SETTINGS_MENU_TITLE, {STRING_SETTINGS_MENU_OPTION_FIRST, STRING_SETTINGS_MENU_OPTION_SECOND, STRING_SETTINGS_MENU_OPTION_THIRD, STRING_SETTINGS_MENU_OPTION_FOURTH, STRING_SETTINGS_MENU_OPTION_FIFTH, STRING_SETTINGS_MENU_OPTION_SIXTH, STRING_SETTINGS_MENU_OPTION_SEVENTH});
 MenuHelper ReadyModule::gameModeMenuHelper(STRING_GAME_MENU_TITLE, {STRING_GAME_MENU_OPTION_FIRST, STRING_GAME_MENU_OPTION_SECOND, STRING_GAME_MENU_OPTION_THIRD, STRING_GAME_MENU_OPTION_FOURTH, STRING_GAME_MENU_OPTION_FIFTH});
 
-char ReadyModule::menuIndex = 0;
+ReadyModuleMenuState ReadyModule::menuIndex = ReadyModuleMenuState::MAIN;
 
 /**
  * @brief Establish our task, bind it to the scheduler.
@@ -55,14 +55,17 @@ bool ReadyModule::onWake()
     mainMenuHelper.setIndex(0);
     settingsMenuHelper.setIndex(0);
 
-    menuIndex = 0;
+    // Set our main menu index (what master menu we are in) to its initial state
+    menuIndex = ReadyModuleMenuState::MAIN;
 
+    // Register our input callbacks
     InputManager::registerInputCallback(handleTriggerPull, InputSource::BUTTON_TRIGGER);
     InputManager::registerInputCallback(handleMenuLeft, InputSource::BUTTON_LEFT);
     InputManager::registerInputCallback(handleMenuRight, InputSource::BUTTON_RIGHT);
 
     Serial.println("[ReadyModule] I've been asked to wake up");
 
+    // Draw the initial menu frame
     mainMenuHelper.drawMenu();
 
     return true;
@@ -74,7 +77,7 @@ bool ReadyModule::onWake()
  */
 void ReadyModule::onSleep()
 {
-    // Put to sleep whatever we have been running
+    // Deregister our input callbacks
     InputManager::deregisterInputCallback(handleTriggerPull, InputSource::BUTTON_TRIGGER);
     InputManager::deregisterInputCallback(handleMenuLeft, InputSource::BUTTON_LEFT);
     InputManager::deregisterInputCallback(handleMenuRight, InputSource::BUTTON_RIGHT);
@@ -87,7 +90,23 @@ void ReadyModule::onSleep()
  */
 void ReadyModule::onUpdate()
 {
-    // I've got nothing.
+    // I've got nothing, suprisingly
+}
+
+/**
+ * @brief The callback used to handle incoming trigger pull events.
+ * 
+ * @param _ InputSource - filtered to always be trigger
+ * @param state The new, changed state of the source
+ */
+void ReadyModule::handleTriggerPull(InputSource _, bool state)
+{
+    // The trigger's state has fallen from high to low
+    if (state)
+        return;
+
+    if (handleMenuSelection())
+        refreshDisplay();
 }
 
 bool ReadyModule::handleMenuSelection()
@@ -96,102 +115,20 @@ bool ReadyModule::handleMenuSelection()
     // Handle the logic for whatever selection has been made
     switch (menuIndex)
     {
-    case 0:
+    case MAIN:
         // Main Menu options logic
         Serial.printf("%d\n", mainMenuHelper.getMenuIndex());
-        switch (mainMenuHelper.getMenuIndex())
-        {
-        case 0:
-            // Select Game Mode (move into game mode menu)
-            menuIndex = 2;
-            return true;
-            break;
-        case 1:
-            // Pair Targets (move into pairing state)
-            StateManager::setSystemState(SystemState::Pair);
-            return false;
-            break;
-        case 2:
-            // Change Settings (move into settings menu)
-            menuIndex = 1;
-            return true;
-            break;
-        case 3:
-            // Move into about page
-            // TODO: Implement About Page
-            break;
-        default:
-            // Do nothing, really.
-            break;
-        }
+        return handleMainMenuSelection();
         break;
-    case 1:
+    case SETTINGS:
         // Settings Menu options logic
         Serial.printf("%d\n", settingsMenuHelper.getMenuIndex());
-        switch (settingsMenuHelper.getMenuIndex())
-        {
-        case 0:
-            // Mute Audio
-            AudioManager::setVolume(0.0);
-            break;
-        case 1:
-            // Audio: 12.5%
-            AudioManager::setVolume(0.125);
-            AudioManager::playAudio("/audio/shoot.wav");
-            break;
-        case 2:
-            // Audio 25%
-            AudioManager::setVolume(0.25);
-            AudioManager::playAudio("/audio/shoot.wav");
-            break;
-        case 3:
-            // Audio 50%
-            AudioManager::setVolume(0.50);
-            AudioManager::playAudio("/audio/shoot.wav");
-            break;
-        case 4:
-            // Audio 100%
-            AudioManager::setVolume(1.0);
-            AudioManager::playAudio("/audio/shoot.wav");
-            break;
-        case 5:
-            // Reset all configuration settings
-            ConfigManager::resetData();
-            break;
-        case 6:
-            // Back
-            menuIndex = 0;
-            return true;
-            break;
-        default:
-            break;
-        }
+        return handleSettingMenuSelection();
         break;
-    case 2:
+    case GAME:
         // Game Mode options logic
         Serial.printf("%d\n", gameModeMenuHelper.getMenuIndex());
-        switch (gameModeMenuHelper.getMenuIndex())
-        {
-        case 0:
-            // One-Shot
-            break;
-        case 1:
-            // Wack-A-mole
-            break;
-        case 2:
-            // Horde
-            break;
-        case 3:
-            // Time Trial
-            break;
-        case 4:
-            // Back
-            menuIndex = 0;
-            return true;
-            break;
-        default:
-            break;
-        }
+        return handleGameMenuSelection();
         break;
     default:
         break;
@@ -200,17 +137,116 @@ bool ReadyModule::handleMenuSelection()
     return true;
 }
 
+bool ReadyModule::handleMainMenuSelection()
+{
+    switch (mainMenuHelper.getMenuIndex())
+    {
+    case 0:
+        // Select Game Mode (move into game mode menu)
+        menuIndex = ReadyModuleMenuState::GAME;
+        return true;
+        break;
+    case 1:
+        // Pair Targets (move into pairing state)
+        StateManager::setSystemState(SystemState::Pair);
+        break;
+    case 2:
+        // Change Settings (move into settings menu)
+        menuIndex = ReadyModuleMenuState::SETTINGS;
+        return true;
+        break;
+    case 3:
+        // Move into about page
+        // TODO: Implement About Page
+        break;
+    default:
+        // Do nothing, really.
+        break;
+    }
+
+    return false;
+}
+
+bool ReadyModule::handleSettingMenuSelection()
+{
+    switch (settingsMenuHelper.getMenuIndex())
+    {
+    case 0:
+        // Mute Audio
+        AudioManager::setVolume(0.0);
+        break;
+    case 1:
+        // Audio: 12.5%
+        AudioManager::setVolume(0.125);
+        AudioManager::playAudio("/audio/shoot.wav");
+        break;
+    case 2:
+        // Audio 25%
+        AudioManager::setVolume(0.25);
+        AudioManager::playAudio("/audio/shoot.wav");
+        break;
+    case 3:
+        // Audio 50%
+        AudioManager::setVolume(0.50);
+        AudioManager::playAudio("/audio/shoot.wav");
+        break;
+    case 4:
+        // Audio 100%
+        AudioManager::setVolume(1.0);
+        AudioManager::playAudio("/audio/shoot.wav");
+        break;
+    case 5:
+        // Reset all configuration settings
+        ConfigManager::resetData();
+        break;
+    case 6:
+        // Back
+        menuIndex = ReadyModuleMenuState::MAIN;
+        return true;
+        break;
+    default:
+        break;
+    }
+    return false;
+}
+
+bool ReadyModule::handleGameMenuSelection()
+{
+    switch (gameModeMenuHelper.getMenuIndex())
+    {
+    case 0:
+        // One-Shot
+        break;
+    case 1:
+        // Wack-A-mole
+        break;
+    case 2:
+        // Horde
+        break;
+    case 3:
+        // Time Trial
+        break;
+    case 4:
+        // Back
+        menuIndex = ReadyModuleMenuState::MAIN;
+        return true;
+        break;
+    default:
+        break;
+    }
+}
+
 void ReadyModule::refreshDisplay()
 {
     switch (menuIndex)
     {
-    case 0:
+    case MAIN:
         mainMenuHelper.drawMenu();
         break;
-    case 1:
+    case SETTINGS:
         settingsMenuHelper.drawMenu();
         break;
-    case 2:
+    case GAME:
         gameModeMenuHelper.drawMenu();
         break;
     default:
@@ -218,30 +254,22 @@ void ReadyModule::refreshDisplay()
     }
 }
 
-void ReadyModule::handleTriggerPull(InputSource _, bool state)
-{
-    // The trigger has been pulled. Whoop de doo.
-    if(state) return;
-
-    if(handleMenuSelection())
-        refreshDisplay();
-}
-
 void ReadyModule::handleMenuLeft(InputSource _, bool state)
 {
     // Only care when there's a change to high
-    if(!state) return;
+    if (!state)
+        return;
 
     // If so, do our navigation logic
     switch (menuIndex)
     {
-    case 0:
+    case MAIN:
         mainMenuHelper.moveUp();
         break;
-    case 1:
+    case SETTINGS:
         settingsMenuHelper.moveUp();
         break;
-    case 2:
+    case GAME:
         gameModeMenuHelper.moveUp();
         break;
     default:
@@ -254,22 +282,25 @@ void ReadyModule::handleMenuLeft(InputSource _, bool state)
 
 void ReadyModule::handleMenuRight(InputSource _, bool state)
 {
-    if(!state) return;
+    // Only act when changing from low->high
+    if (!state)
+        return;
 
     switch (menuIndex)
     {
-    case 0:
+    case MAIN:
         mainMenuHelper.moveDown();
         break;
-    case 1:
+    case SETTINGS:
         settingsMenuHelper.moveDown();
         break;
-    case 2:
+    case GAME:
         gameModeMenuHelper.moveDown();
         break;
     default:
         break;
     }
 
+    // Refresh the display, no matter
     refreshDisplay();
 }
