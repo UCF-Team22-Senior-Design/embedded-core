@@ -18,6 +18,10 @@ bool PairingModule::onWake()
     ConfigManager::configData.controller = 0;
     ConfigManager::saveData();
 
+    // Issue a general forget request
+    NetworkMessage forgetMessage("PAIR_FORGET", String(NetworkManager::getNodeID()), NetworkManager::getNodeTime());
+    NetworkManager::sendMessage(forgetMessage);
+
     // Set the lights to be a static yellow color
     LightingManager::setLoop(false);
     LightingManager::setClearOnStop(false);
@@ -30,6 +34,7 @@ bool PairingModule::onWake()
     InputManager::registerInputCallback(&handlePhotoInput, InputSource::PHOTOTRANSISTOR);
     InputManager::registerInputCallback(&handlePairingInput, InputSource::BUTTON_PAIR);
     NetworkManager::registerCallback(&handleNetworkMessage);
+
 
     return true;
 }
@@ -61,7 +66,7 @@ void PairingModule::handlePhotoInput(InputSource _, bool state)
     LightingManager::setPattern(LightingPattern::BLINK_ALL);
     LightingManager::setPrimaryColor(255, 255, 255);
     LightingManager::setSecondaryColor(120, 120, 0);
-    LightingManager::setTimeout(500);
+    LightingManager::setTimeout(200);
     LightingManager::startPattern();
 
     // Also release a pairing request packet if we're not currently paired
@@ -105,5 +110,12 @@ void PairingModule::handleNetworkMessage(NetworkMessage message)
         // Pairing is complete. Return to the ready state
         StateManager::setSystemState(SystemState::Ready);
         return;
+    }
+
+    if(message.getTag() == "PAIR_FORGET" && message.getSender() == ConfigManager::configData.controller)
+    {
+        // Remove the controller's pairing information
+        ConfigManager::configData.controller = 0;
+        ConfigManager::saveData();
     }
 }

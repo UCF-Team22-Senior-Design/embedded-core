@@ -60,8 +60,6 @@ void setup() {
 
   AudioManager::playAudio("/audio/owin31.wav");
 
-
-
   StateManager::setSystemState(SystemState::Ready);
 }
 
