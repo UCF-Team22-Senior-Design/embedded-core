@@ -81,14 +81,14 @@ void PairingModule::onUpdate()
 void PairingModule::leftMenuCallback(InputSource _, bool state)
 {
     // Go back to ready state
-    if(!state) return;
+    if(state) return;
     StateManager::setSystemState(SystemState::Ready);
 }
 
 void PairingModule::rightMenuCallback(InputSource _, bool state)
 {
     // Only act on the down-press of the buttons
-    if(!state) return;
+    if(state) return;
 
     // No point in doing this work if there are no targets to clear.
     if(ConfigManager::configData.targets.size() <= 0) return;

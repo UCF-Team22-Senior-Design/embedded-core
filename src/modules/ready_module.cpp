@@ -279,7 +279,7 @@ void ReadyModule::refreshDisplay()
 void ReadyModule::handleMenuRight(InputSource _, bool state)
 {
     // Only care when there's a change to high
-    if (!state)
+    if (state)
         return;
 
     // If so, do our navigation logic
@@ -305,7 +305,7 @@ void ReadyModule::handleMenuRight(InputSource _, bool state)
 void ReadyModule::handleMenuLeft(InputSource _, bool state)
 {
     // Only act when changing from low->high
-    if (!state)
+    if (state)
         return;
 
     switch (menuIndex)
