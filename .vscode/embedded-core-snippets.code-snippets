@@ -39,7 +39,7 @@
 			"    static void onUpdate();",
 			"    static Task* getTask() { return &moduleTask; }",
 			"};",
-			"$2"
+			"$0"
 		],
 		"description": "Creates a module header template"
 	},
@@ -86,6 +86,7 @@
 			"void ${2:upper_module}Module::onUpdate()",
 			"{",
 			"    // Nothing to do",
+			"    $0",
 			"}",
 			"",
 			"void ${2:upper_module}Module::handleTriggerInput(InputSource _, bool state)",
@@ -114,13 +115,10 @@
 			"",
 			"void ${2:upper_module}Module::handleNetworkMessage(NetworkMessage message)",
 			"{",
-			"    // Filter messages to only our controller",
-			"    if(message.getSender() != ConfigManager::configData.controller) return;",
 			"",
 			"    // Print the message to serial",
 			"    Serial.printf(\"[${2:upper_module}Module] Got message: %s\n\", message.toString().c_str());",
 			"}",
-			"$2"
 		]
 	}
 }
