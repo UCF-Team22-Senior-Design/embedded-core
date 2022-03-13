@@ -116,6 +116,18 @@ void ReadyModule::handlePairingInput(InputSource _, bool state)
 
 void ReadyModule::handleNetworkMessage(NetworkMessage message)
 {
+    // Filter messages to only our controller
+    if(message.getSender() != ConfigManager::configData.controller) return;
+
     // Just print it out - in the futue, jump into the game mode when we recieve a gamemode message
     Serial.printf("[ReadyModule] Got message: %s\n", message.toString().c_str());
+
+    String messageTag = message.getTag();
+
+    if(messageTag == "GAME_START")
+    {
+        // Send ourselves into the gameplay module
+        StateManager::setSystemState(SystemState::Play);
+        return;
+    }
 }
