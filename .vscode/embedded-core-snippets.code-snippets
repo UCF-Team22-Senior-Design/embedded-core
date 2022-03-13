@@ -1,0 +1,108 @@
+{
+	// Place your embedded-core workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"Create Module Header": {
+		"prefix": "module_header",
+		"body": [
+			"#include \"module.h\"",
+			"",
+			"class ${1:name}Module : public Module",
+			"{",
+			"private:",
+			"    static Task moduleTask;",
+			"",
+			"    static void handleNetworkMessage(NetworkMessage message);",
+			"    static void handlePhotoInput(InputSource _, bool state);",
+			"    static void handlePairInput(InputSource _, bool state);",
+			"public:",
+			"    static void initialize(Scheduler *userScheduler);",
+			"    static bool onWake();",
+			"    static void onSleep();",
+			"    static void onUpdate();",
+			"    static Task* getTask() { return &moduleTask; }",
+			"};",
+			"$2"
+		],
+		"description": "Creates a module header template"
+	},
+	"Create Module Body": {
+		"prefix": "module_body",
+		"body": [
+			"#include \"${1:lower_module}_module.h\"",
+			"",
+			"Task ${2:upper_module}Module::moduleTask;",
+			"",
+			"void ${2:upper_module}Module::initialize(Scheduler *userScheduler)",
+			"{",
+			"    moduleTask.set(TASK_MILLISECOND * 16, TASK_FOREVER, &onUpdate, &onWake, &onSleep);",
+			"",
+			"    // Bind it to our scheduler",
+			"    (*userScheduler).addTask(moduleTask);",
+			"}",
+			"",
+			"bool ${2:upper_module}Module::onWake()",
+			"{",
+			"    Serial.println(\"[${2:upper_module}Module] I've been woken from sleep\");",
+			"",
+			"    // Register our callbacks",
+			"    InputManager::registerInputCallback(&handlePhotoInput, InputSource::PHOTOTRANSISTOR);",
+			"    NetworkManager::registerCallback(&handleNetworkMessage);",
+			"",
+			"",
+			"    return true;",
+			"}",
+			"",
+			"void ${2:upper_module}Module::onSleep()",
+			"{",
+			"    Serial.println(\"[${2:upper_module}Module] I'm being sent to sleep\");",
+			"",
+			"    InputManager::deregisterInputCallback(&handlePhotoInput, InputSource::PHOTOTRANSISTOR);",
+			"    NetworkManager::deregisterCallback(&handleNetworkMessage, \"NONE\");",
+			"}",
+			"",
+			"",
+			"void ${2:upper_module}Module::onUpdate()",
+			"{",
+			"    // Nothing to do",
+			"}",
+			"",
+			"void ${2:upper_module}Module::handlePhotoInput(InputSource _, bool state)",
+			"{",
+			"    // Only act when the input goes from low to high",
+			"    if(state) return;",
+			"",
+			"    Serial.println(\"[${2:upper_module}Module] I've been shot!\");",
+			"}",
+			"",
+			"void ${2:upper_module}Module::handlePairInput(InputSource _, bool state)",
+			"{",
+			"    // Only act when the input goes from high to low",
+			"    if(!state) return;",
+			"}",
+			"",
+			"void ${2:upper_module}Module::handleNetworkMessage(NetworkMessage message)",
+			"{",
+			"    // Filter messages to only our controller",
+			"    if(message.getSender() != ConfigManager::configData.controller) return;",
+			"",
+			"    // Print the message to serial",
+			"    Serial.printf(\"[${2:upper_module}Module] Got message: %s\n\", message.toString().c_str());",
+			"}",
+			"$2"
+		]
+	}
+}
