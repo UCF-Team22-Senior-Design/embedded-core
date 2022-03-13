@@ -52,8 +52,6 @@ void setup() {
 /*StateManager::registerStateTask(SystemState::Play,    PlayModule::getTask());
 */
 
-  // Set our default light state
-
   // Change our state to ready
 
   Serial.println("{Main} Setup done.");

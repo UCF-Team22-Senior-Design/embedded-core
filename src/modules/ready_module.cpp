@@ -28,6 +28,7 @@ bool ReadyModule::onWake()
 
     LightingManager::setLoop(false);
     LightingManager::setClearOnStop(false);
+    LightingManager::setTimeout(200);
 
     // Set the lights to be a static green color or a static red color, depending on pairing state
     bool isPaired = (ConfigManager::configData.controller != 0);
