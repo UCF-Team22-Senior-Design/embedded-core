@@ -48,9 +48,12 @@ void setup() {
   // Register the gameplay modules to the state manager
   ReadyModule::initialize(&userScheduler);
   PairingModule::initialize(&userScheduler);
+  TargetTimingModule::initialize(&userScheduler);
 
-  StateManager::registerStateTask(SystemState::Ready,   ReadyModule::getTask());
-  StateManager::registerStateTask(SystemState::Pair,    PairingModule::getTask());
+  StateManager::registerStateTask(SystemState::Ready,        ReadyModule::getTask());
+  StateManager::registerStateTask(SystemState::Pair,         PairingModule::getTask());
+  StateManager::registerStateTask(SystemState::TargetTiming, TargetTimingModule::getTask());
+
 /*  StateManager::registerStateTask(SystemState::Play,    PlayModule::getTask());
 #ifdef PLATFORM_CONTROLLER
   StateManager::registerStateTask(SystemState::Results, ResultsModule::getTask());

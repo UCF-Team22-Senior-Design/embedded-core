@@ -10,6 +10,7 @@ enum SystemState {
     Pair,
     Play,
     Results
+    TargetTiming,
 };
 
 class StateManager

@@ -7,6 +7,7 @@ const char *ReadyModule::STRING_MENU_OPTION_FIRST = "Select Game Mode";
 const char *ReadyModule::STRING_MENU_OPTION_SECOND = "Pair Targets";
 const char *ReadyModule::STRING_MENU_OPTION_THIRD = "Change Settings";
 const char *ReadyModule::STRING_MENU_OPTION_FOURTH = "About";
+const char *ReadyModule::STRING_MENU_OPTION_FOURTH = "Target Timing";
 
 const char *ReadyModule::STRING_SETTINGS_MENU_TITLE = "Settings";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FIRST = "Mute Audio";
@@ -16,10 +17,10 @@ const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FOURTH = "50% Volume";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FIFTH = "100% Volume";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SIXTH = "Laser On";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_SEVENTH = "Laser Off";
-const char* ReadyModule::STRING_SETTINGS_MENU_OPTION_EIGHTH = "Laser Pulse";
-const char* ReadyModule::STRING_SETTINGS_MENU_OPTION_NINTH = "Laser Follow";
-const char* ReadyModule::STRING_SETTINGS_MENU_OPTION_TENTH = "Reset ALL Settings";
-const char* ReadyModule::STRING_SETTINGS_MENU_OPTION_ELEVENTH = "Go Back";
+const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_EIGHTH = "Laser Pulse";
+const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_NINTH = "Laser Follow";
+const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_TENTH = "Reset ALL Settings";
+const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_ELEVENTH = "Go Back";
 
 const char *ReadyModule::STRING_GAME_MENU_TITLE = "Select Game Mode";
 const char *ReadyModule::STRING_GAME_MENU_OPTION_FIRST = "One-Shot";
@@ -28,7 +29,7 @@ const char *ReadyModule::STRING_GAME_MENU_OPTION_THIRD = "Horde";
 const char *ReadyModule::STRING_GAME_MENU_OPTION_FOURTH = "Time Trial";
 const char *ReadyModule::STRING_GAME_MENU_OPTION_FIFTH = "Back";
 
-MenuHelper ReadyModule::mainMenuHelper(STRING_MENU_TITLE, {STRING_MENU_OPTION_FIRST, STRING_MENU_OPTION_SECOND, STRING_MENU_OPTION_THIRD, STRING_MENU_OPTION_FOURTH});
+MenuHelper ReadyModule::mainMenuHelper(STRING_MENU_TITLE, {STRING_MENU_OPTION_FIRST, STRING_MENU_OPTION_SECOND, STRING_MENU_OPTION_THIRD, STRING_MENU_OPTION_FOURTH, STRING_MENU_OPTION_FIFTH});
 MenuHelper ReadyModule::settingsMenuHelper(STRING_SETTINGS_MENU_TITLE, {STRING_SETTINGS_MENU_OPTION_FIRST, STRING_SETTINGS_MENU_OPTION_SECOND, STRING_SETTINGS_MENU_OPTION_THIRD, STRING_SETTINGS_MENU_OPTION_FOURTH, STRING_SETTINGS_MENU_OPTION_FIFTH, STRING_SETTINGS_MENU_OPTION_SIXTH, STRING_SETTINGS_MENU_OPTION_SEVENTH, STRING_SETTINGS_MENU_OPTION_EIGHTH, STRING_SETTINGS_MENU_OPTION_NINTH, STRING_SETTINGS_MENU_OPTION_TENTH, STRING_SETTINGS_MENU_OPTION_ELEVENTH});
 MenuHelper ReadyModule::gameModeMenuHelper(STRING_GAME_MENU_TITLE, {STRING_GAME_MENU_OPTION_FIRST, STRING_GAME_MENU_OPTION_SECOND, STRING_GAME_MENU_OPTION_THIRD, STRING_GAME_MENU_OPTION_FOURTH, STRING_GAME_MENU_OPTION_FIFTH});
 
@@ -162,6 +163,10 @@ bool ReadyModule::handleMainMenuSelection()
     case 3:
         // Move into about page
         // TODO: Implement About Page
+        break;
+    case 4:
+        // Move into target timing page
+        StateManager::setSystemState(SystemState::TargetTiming);
         break;
     default:
         // Do nothing, really.

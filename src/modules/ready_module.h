@@ -20,6 +20,7 @@ private:
     static const char* STRING_MENU_OPTION_SECOND;
     static const char* STRING_MENU_OPTION_THIRD;
     static const char* STRING_MENU_OPTION_FOURTH;
+    static const char* STRING_MENU_OPTION_FIFTH;
     static const char* STRING_MENU_BUTTON_LEFT;
     static const char* STRING_MENU_BUTTON_RIGHT;
 
