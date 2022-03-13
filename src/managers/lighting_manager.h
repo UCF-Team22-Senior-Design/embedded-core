@@ -5,6 +5,7 @@
 #include <Adafruit_NeoPixel.h>
 
 #include "../models/pinouts.h"
+#include "network_manager.h"
 
 #define PIXELS_PER_SEGMENT 3
 #define NUM_SEGMENTS 4
@@ -26,12 +27,18 @@ private:
     static void patternBlinkAll();
     static void patternMarchingBlink();
 
+    // These are helper functions to assist in the encoding / decoding of the hex-arrays
+    static unsigned long arrayToUL(const char* byteArray);
+    static uint32_t arrayToUint(const char* byteArray);
+    static int hexChar2Int(char ch);
+
     // Internal state information
     static LightingPattern currentLightingPattern;
     static bool loop;
     static bool clearOnStop;
     static unsigned long timeStart;
     static unsigned long timeOut;
+    static unsigned long effectFrequency;
     static uint32_t primaryColor;
     static uint32_t secondaryColor;
 
@@ -49,9 +56,12 @@ public:
     static void setPrimaryColor(uint8_t r, uint8_t g, uint8_t b);
     static void setSecondaryColor(uint8_t r, uint8_t g, uint8_t b);
     static void setTimeout(unsigned long timeout);
+    static void setFrequency(unsigned long frequency);
     static void setPattern(LightingPattern pattern);
     static void setClearOnStop(bool newClearOnStop);
     static void setLoop(bool loopValue);
+
+    static void setEffect(const char* effectCode);
 
     static LightingPattern getCurrentPattern();
     static bool isPlaying();
