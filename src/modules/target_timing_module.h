@@ -1,6 +1,8 @@
 #include "module.h"
 
 #include "../managers/display_manager.h"
+#include "../managers/network_manager.h"
+#include "helpers/lighting_encoder.h"
 
 class TargetTimingModule : public Module
 {

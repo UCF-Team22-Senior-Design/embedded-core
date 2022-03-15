@@ -32,6 +32,23 @@ bool TargetTimingModule::onWake()
     InputManager::registerInputCallback(&handleRightMenuInput, InputSource::BUTTON_RIGHT);
     NetworkManager::registerCallback(&handleNetworkMessage);
 
+    // Start the game for all targets
+    NetworkMessage message(MESSAGE_TAG_GAME_START, "", NetworkManager::getNodeTime());
+    NetworkManager::sendMessage(message);
+
+    // Ignite all targets
+    String lightingEffect = LightingEncoder::encodeLightingEffect(0, 0, 0, NetworkManager::getNodeTime(), 0, 0, LightingEncoder::rgbToUint(10, 10, 10), LightingEncoder::rgbToUint(0, 0, 0));
+    message = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, lightingEffect, NetworkManager::getNodeTime());
+    NetworkManager::sendMessage(message);
+
+    // Give all targets a "flash" lighting effect
+    lightingEffect = LightingEncoder::encodeLightingEffect(1, 0, 0, NetworkManager::getNodeTime(), 0, 100, LightingEncoder::rgbToUint(255, 255, 255), LightingEncoder::rgbToUint(10, 10, 10));
+    message = NetworkMessage(MESSAGE_TAG_TARGET_ON_HIT, lightingEffect, NetworkManager::getNodeTime());
+    NetworkManager::sendMessage(message);
+
+    // Refresh display!
+    refreshDisplay();
+
     return true;
 }
 
@@ -47,6 +64,9 @@ void TargetTimingModule::onSleep()
     InputManager::deregisterInputCallback(&handleLeftMenuInput, InputSource::BUTTON_LEFT);
     InputManager::deregisterInputCallback(&handleRightMenuInput, InputSource::BUTTON_RIGHT);
     NetworkManager::deregisterCallback(&handleNetworkMessage, "NONE");
+
+    NetworkMessage gameEndMessage(MESSAGE_TAG_GAME_END, "", NetworkManager::getNodeTime());
+    NetworkManager::sendMessage(gameEndMessage);
 }
 
 void TargetTimingModule::onUpdate()
@@ -116,7 +136,7 @@ void TargetTimingModule::refreshDisplay()
     {
         // We haven't fired the gun yet - or, we've fired the gun and not hit
         // anything yet.
-        DisplayManager::drawBasicScreen("BACK", "", "Shot Timer", "Shoot a target to record data");
+        DisplayManager::drawBasicScreen("BACK", "", "Shot Timer", "Shoot a target to \nrecord data");
         return;
     }
 

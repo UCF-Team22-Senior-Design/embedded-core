@@ -7,7 +7,7 @@ const char *ReadyModule::STRING_MENU_OPTION_FIRST = "Select Game Mode";
 const char *ReadyModule::STRING_MENU_OPTION_SECOND = "Pair Targets";
 const char *ReadyModule::STRING_MENU_OPTION_THIRD = "Change Settings";
 const char *ReadyModule::STRING_MENU_OPTION_FOURTH = "About";
-const char *ReadyModule::STRING_MENU_OPTION_FOURTH = "Target Timing";
+const char *ReadyModule::STRING_MENU_OPTION_FIFTH = "Target Timing";
 
 const char *ReadyModule::STRING_SETTINGS_MENU_TITLE = "Settings";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FIRST = "Mute Audio";

@@ -9,7 +9,7 @@ enum SystemState {
     Ready,
     Pair,
     Play,
-    Results
+    Results,
     TargetTiming,
 };
 

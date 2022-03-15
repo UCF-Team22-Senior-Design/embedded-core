@@ -68,7 +68,8 @@ void PairingModule::onSleep()
 void PairingModule::triggerCallback(InputSource source, bool state)
 {
     // Filter out to only the pull-back of the trigger
-    if(state) return;
+    if (state)
+        return;
 
     // Perform our desired action
     StateManager::setSystemState(SystemState::Ready);
@@ -81,18 +82,21 @@ void PairingModule::onUpdate()
 void PairingModule::leftMenuCallback(InputSource _, bool state)
 {
     // Go back to ready state
-    if(state) return;
+    if (state)
+        return;
     StateManager::setSystemState(SystemState::Ready);
 }
 
 void PairingModule::rightMenuCallback(InputSource _, bool state)
 {
     // Only act on the down-press of the buttons
-    if(state) return;
+    if (state)
+        return;
 
     // No point in doing this work if there are no targets to clear.
-    if(ConfigManager::configData.targets.size() <= 0) return;
-    
+    if (ConfigManager::configData.targets.size() <= 0)
+        return;
+
     // Unpair all targets
     ConfigManager::configData.targets.clear();
     // Save this change
@@ -105,16 +109,12 @@ void PairingModule::networkMessageCallback(NetworkMessage networkMessage)
 {
     // Network message things!
 
-    // For now, just redraw the screen with some info about the message
-    String displayMessage = "Sender: " + String(networkMessage.getSender()) + "\nTag: " + networkMessage.getTag() + "\nData: " + networkMessage.getData();
-    drawScreen(displayMessage);
-
     // If it's a target's pairing request, validate it.
-    if(networkMessage.getTag() == "PAIR_REQUEST")
+    if (networkMessage.getTag() == "PAIR_REQUEST")
     {
         // There's no reason to reject a request right now. If the logic is necessary later, we can do it,
         // but not yet.
-        
+
         // For now, we register the target and send a confirmation
         ConfigManager::configData.targets.insert(networkMessage.getSender());
         NetworkMessage response("PAIR_ACCEPTED", String(NetworkManager::getNodeID()), NetworkManager::getNodeTime());
@@ -122,9 +122,21 @@ void PairingModule::networkMessageCallback(NetworkMessage networkMessage)
 
         // Store this new target information
         ConfigManager::saveData();
-
-        return;
     }
+    else if (networkMessage.getTag() == "PAIR_FORGET")
+    {
+        // If we're being asked to forget this target, do so.
+        ConfigManager::configData.targets.erase(networkMessage.getSender());
+
+        // Store our changed information
+        ConfigManager::saveData();
+
+        // Update our display
+    }
+
+    // For now, just redraw the screen with some info about the message
+    String displayMessage = "Sender: " + String(networkMessage.getSender()) + "\nTag: " + networkMessage.getTag() + "\nData: " + networkMessage.getData();
+    drawScreen(displayMessage);
 
     return;
 }
