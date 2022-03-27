@@ -20,8 +20,8 @@
 		"body": [
 			"#include \"module.h\"",
 			"",
-			"#include \"../managers/display_manager.h",
-			"#include \"../managers/network_manager.h",
+			"#include \"../managers/display_manager.h\"",
+			"#include \"../managers/network_manager.h\"",
 			"",
 			"class ${1:name}Module : public Module",
 			"{",
@@ -117,7 +117,7 @@
 			"{",
 			"",
 			"    // Print the message to serial",
-			"    Serial.printf(\"[${2:upper_module}Module] Got message: %s\n\", message.toString().c_str());",
+			"    Serial.printf(\"[${2:upper_module}Module] Got message: %s\\n\", message.toString().c_str());",
 			"}",
 		]
 	}

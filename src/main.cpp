@@ -49,10 +49,17 @@ void setup() {
   ReadyModule::initialize(&userScheduler);
   PairingModule::initialize(&userScheduler);
   TargetTimingModule::initialize(&userScheduler);
+  OneShotModule::initialize(&userScheduler);
+
+  ResultsModule::initialize(&userScheduler);
 
   StateManager::registerStateTask(SystemState::Ready,        ReadyModule::getTask());
   StateManager::registerStateTask(SystemState::Pair,         PairingModule::getTask());
   StateManager::registerStateTask(SystemState::TargetTiming, TargetTimingModule::getTask());
+
+  StateManager::registerStateTask(SystemState::GameOneShot,  OneShotModule::getTask());
+
+  StateManager::registerStateTask(SystemState::Results,      ResultsModule::getTask());
 
 /*  StateManager::registerStateTask(SystemState::Play,    PlayModule::getTask());
 #ifdef PLATFORM_CONTROLLER

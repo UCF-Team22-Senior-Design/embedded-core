@@ -241,6 +241,7 @@ bool ReadyModule::handleGameMenuSelection()
     {
     case 0:
         // One-Shot
+        StateManager::setSystemState(SystemState::GameOneShot);
         break;
     case 1:
         // Wack-A-mole

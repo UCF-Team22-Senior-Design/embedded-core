@@ -2,4 +2,6 @@
 
 #include "ready_module.h"
 #include "pairing_module.h"
+#include "results_module.h"
 #include "target_timing_module.h"
+#include "games/one-shot_module.h"
