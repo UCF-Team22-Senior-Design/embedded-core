@@ -6,3 +6,4 @@
 #include "target_timing_module.h"
 #include "games/one-shot_module.h"
 #include "games/time-trial_module.h"
+#include "games/whack-a-mole_module.h"

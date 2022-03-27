@@ -24,7 +24,7 @@ const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_ELEVENTH = "Go Back";
 
 const char *ReadyModule::STRING_GAME_MENU_TITLE = "Select Game Mode";
 const char *ReadyModule::STRING_GAME_MENU_OPTION_FIRST = "One-Shot";
-const char *ReadyModule::STRING_GAME_MENU_OPTION_SECOND = "Wack-A-Mole";
+const char *ReadyModule::STRING_GAME_MENU_OPTION_SECOND = "Whack-A-Mole";
 const char *ReadyModule::STRING_GAME_MENU_OPTION_THIRD = "Horde";
 const char *ReadyModule::STRING_GAME_MENU_OPTION_FOURTH = "Time Trial";
 const char *ReadyModule::STRING_GAME_MENU_OPTION_FIFTH = "Back";
@@ -245,6 +245,7 @@ bool ReadyModule::handleGameMenuSelection()
         break;
     case 1:
         // Wack-A-mole
+        StateManager::setSystemState(SystemState::GameWhackAMole);
         break;
     case 2:
         // Horde
