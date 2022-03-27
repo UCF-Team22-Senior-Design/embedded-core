@@ -11,7 +11,8 @@ enum SystemState {
     Play,
     Results,
     TargetTiming,
-    GameOneShot
+    GameOneShot,
+    GameTimeTrial
 };
 
 class StateManager

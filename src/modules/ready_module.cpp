@@ -251,6 +251,7 @@ bool ReadyModule::handleGameMenuSelection()
         break;
     case 3:
         // Time Trial
+        StateManager::setSystemState(SystemState::GameTimeTrial);
         break;
     case 4:
         // Back
