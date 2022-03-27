@@ -249,6 +249,7 @@ bool ReadyModule::handleGameMenuSelection()
         break;
     case 2:
         // Horde
+        StateManager::setSystemState(SystemState::GameHorde);
         break;
     case 3:
         // Time Trial
