@@ -2,6 +2,11 @@
 
 Task OneShotModule::moduleTask;
 
+
+LightingCommand OneShotModule::standbyCommand(LightingPattern::STATIC, 0, 0, NetworkManager::getNodeTime(), 0, 0, LightingCommand::rgbToUint(0, 255, 0), LightingCommand::rgbToUint(0, 0, 0));
+LightingCommand OneShotModule::onHitCommand(LightingPattern::BLINK_ALL, 0, 0, NetworkManager::getNodeTime(), 200, 100, LightingCommand::rgbToUint(255, 255, 255), LightingCommand::rgbToUint(0, 0, 0));
+
+
 bool OneShotModule::hasShot = false;
 int OneShotModule::score = 0;
 unsigned long OneShotModule::lastShotTime = 0;
@@ -35,15 +40,12 @@ bool OneShotModule::onWake()
     NetworkManager::sendMessage(message);
 
     // Ignite all targets
-    String lightingEffect = LightingEncoder::encodeLightingEffect(0, 0, 0, NetworkManager::getNodeTime(), 0, 0, LightingEncoder::rgbToUint(0, 255, 0), LightingEncoder::rgbToUint(0, 0, 0));
-    message = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, lightingEffect, NetworkManager::getNodeTime());
+    message = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, standbyCommand.toString(), NetworkManager::getNodeTime());
     NetworkManager::sendMessage(message);
 
     // Give all targets a "flash" lighting effect
-    lightingEffect = LightingEncoder::encodeLightingEffect(1, 0, 0, NetworkManager::getNodeTime(), 0, 100, LightingEncoder::rgbToUint(255, 255, 255), LightingEncoder::rgbToUint(10, 10, 10));
-    message = NetworkMessage(MESSAGE_TAG_TARGET_ON_HIT, lightingEffect, NetworkManager::getNodeTime());
+    message = NetworkMessage(MESSAGE_TAG_TARGET_ON_HIT, onHitCommand.toString(), NetworkManager::getNodeTime());
     NetworkManager::sendMessage(message);
-
 
     drawScreen();
 

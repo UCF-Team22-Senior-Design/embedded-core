@@ -86,14 +86,23 @@ void NetworkManager::receivedMessage(uint32_t from, String &message)
 
 void NetworkManager::sendMessage(NetworkMessage message)
 {
+    Serial.printf("[NetworkManager] broadcast message %s\n", message.toString().c_str());
     // Broadcast a message across the network
     mesh.sendBroadcast(message.toString());
 }
 
 void NetworkManager::sendMessage(NetworkMessage message, uint32_t destination)
 {
+    Serial.printf("[NetworkManager] broadcast message %s to %lu\n", message.toString().c_str(), destination);
     // Send a message to a specific target in the network
-    mesh.sendSingle(destination, message.toString());
+    if(mesh.sendSingle(destination, message.toString()))
+    {
+        Serial.println("Worked");
+    }
+    else
+    {
+        Serial.println("Did not");
+    }
 }
 
 void NetworkManager::registerCallback(NetworkMessageCallback callback, String tagFilter)

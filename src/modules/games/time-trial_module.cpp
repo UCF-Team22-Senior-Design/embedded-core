@@ -2,6 +2,9 @@
 
 Task TimeTrialModule::moduleTask;
 
+LightingCommand TimeTrialModule::standbyCommand(LightingPattern::STATIC, 0, 0, NetworkManager::getNodeTime(), 0, 0, LightingCommand::rgbToUint(0, 255, 0), LightingCommand::rgbToUint(0, 0, 0));
+LightingCommand TimeTrialModule::onHitCommand(LightingPattern::BLINK_ALL, 0, 0, NetworkManager::getNodeTime(), 200, 100, LightingCommand::rgbToUint(255, 255, 255), LightingCommand::rgbToUint(0, 0, 0));
+
 int TimeTrialModule::score = 0;
 int TimeTrialModule::numTargetsIgnited = 0;
 unsigned long TimeTrialModule::startTime = 0;
@@ -35,13 +38,12 @@ bool TimeTrialModule::onWake()
     NetworkManager::sendMessage(message);
 
     // Ignite all targets
-    String lightingEffect = LightingEncoder::encodeLightingEffect(0, 0, 0, NetworkManager::getNodeTime(), 0, 0, LightingEncoder::rgbToUint(0, 255, 0), LightingEncoder::rgbToUint(0, 0, 0));
-    message = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, lightingEffect, NetworkManager::getNodeTime());
+    standbyCommand.primaryColor = LightingCommand::rgbToUint(0, 255, 0);
+    message = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, standbyCommand.toString(), NetworkManager::getNodeTime());
     NetworkManager::sendMessage(message);
 
     // Give all targets a "flash" lighting effect
-    //lightingEffect = LightingEncoder::encodeLightingEffect(1, 0, 0, NetworkManager::getNodeTime(), 0, 100, LightingEncoder::rgbToUint(255, 255, 255), LightingEncoder::rgbToUint(10, 10, 10));
-    message = NetworkMessage(MESSAGE_TAG_TARGET_ON_HIT, "-", NetworkManager::getNodeTime());
+    message = NetworkMessage(MESSAGE_TAG_TARGET_ON_HIT, onHitCommand.toString(), NetworkManager::getNodeTime());
     NetworkManager::sendMessage(message);
 
     drawScreen();
@@ -107,15 +109,15 @@ void TimeTrialModule::handleNetworkMessage(NetworkMessage message)
         if(numTargetsIgnited > 0) {
             
             // Extinguish hit target
-            String lightingEffect = LightingEncoder::encodeLightingEffect(0, 0, 0, NetworkManager::getNodeTime(), 0, 0, LightingEncoder::rgbToUint(0, 0, 0), LightingEncoder::rgbToUint(0, 0, 0));
-            message = NetworkMessage(MESSAGE_TAG_TARGET_EXTINGUISH, lightingEffect, NetworkManager::getNodeTime());
+            standbyCommand.primaryColor = LightingCommand::rgbToUint(0, 0, 0);
+            message = NetworkMessage(MESSAGE_TAG_TARGET_EXTINGUISH, standbyCommand.toString(), NetworkManager::getNodeTime());
             NetworkManager::sendMessage(message, message.getSender());
 
         } else {
             
             // Ignite all targets
-            String lightingEffect = LightingEncoder::encodeLightingEffect(0, 0, 0, NetworkManager::getNodeTime(), 0, 0, LightingEncoder::rgbToUint(0, 255, 0), LightingEncoder::rgbToUint(0, 0, 0));
-            message = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, lightingEffect, NetworkManager::getNodeTime());
+            standbyCommand.primaryColor = LightingCommand::rgbToUint(0, 255, 0);
+            message = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, standbyCommand.toString(), NetworkManager::getNodeTime());
             NetworkManager::sendMessage(message);
             
             // Reset num targets counter

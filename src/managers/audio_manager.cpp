@@ -91,7 +91,7 @@ void AudioManager::playAudio(String fileName)
     // Restart our audio task
     taskAudioUpdate.restart();
 
-    Serial.printf("<AudioManager> Beginning playback of %s\n", fileName.c_str());
+    //Serial.printf("<AudioManager> Beginning playback of %s\n", fileName.c_str());
 }
 
 void AudioManager::setVolume(float volume)

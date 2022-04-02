@@ -2,8 +2,8 @@
 
 #include "../../managers/display_manager.h"
 #include "../../managers/network_manager.h"
+#include "../../models/lighting_command.h"
 #include "../results_module.h"
-#include "../helpers/lighting_encoder.h"
 
 class OneShotModule : public Module
 {
@@ -13,6 +13,9 @@ private:
     static bool hasShot;
     static int score;
     static unsigned long lastShotTime;
+
+    static LightingCommand standbyCommand;
+    static LightingCommand onHitCommand;
 
     static void handleNetworkMessage(NetworkMessage message);
     static void handleTriggerInput(InputSource _, bool state);

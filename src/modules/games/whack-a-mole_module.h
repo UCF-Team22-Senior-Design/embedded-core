@@ -2,7 +2,7 @@
 
 #include "../../managers/display_manager.h"
 #include "../../managers/network_manager.h"
-#include "../helpers/lighting_encoder.h"
+#include "../../models/lighting_command.h"
 #include "../results_module.h"
 
 #define WHACK_A_MOLE_LIMIT        60000
@@ -14,6 +14,9 @@ private:
     
     static int score;
     static unsigned long startTime;
+
+    static LightingCommand standbyCommand;
+    static LightingCommand onHitCommand;
 
     static void handleNetworkMessage(NetworkMessage message);
     static void handleLeftMenuInput(InputSource _, bool state);

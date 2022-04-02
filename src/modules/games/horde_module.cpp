@@ -2,6 +2,9 @@
 
 Task HordeModule::moduleTask;
 
+LightingCommand HordeModule::standbyCommand(LightingPattern::STATIC, 0, 0, NetworkManager::getNodeTime(), 0, 100, LightingCommand::rgbToUint(0, 0, 0), LightingCommand::rgbToUint(0, 0, 0));
+LightingCommand HordeModule::onHitCommand(LightingPattern::BLINK_ALL, 0, 0, NetworkManager::getNodeTime(), 200, 100, LightingCommand::rgbToUint(255, 255, 255), LightingCommand::rgbToUint(0, 0, 0));
+
 /*
 
 Horde mode:
@@ -65,6 +68,11 @@ bool HordeModule::onWake()
     NetworkMessage message(MESSAGE_TAG_GAME_START, "", NetworkManager::getNodeTime());
     NetworkManager::sendMessage(message);
 
+    // Extinguish all targets
+    standbyCommand.primaryColor = 0;
+    message = NetworkMessage(MESSAGE_TAG_TARGET_EXTINGUISH, standbyCommand.toString(), NetworkManager::getNodeTime());
+    NetworkManager::sendMessage(message);
+
     drawScreen();
 
     return true;
@@ -81,6 +89,10 @@ void HordeModule::onSleep()
     LaserManager::setLaserEnable(false);
 
     // Tell all targets to go to sleep
+    standbyCommand.primaryColor = 0;
+    NetworkMessage message(MESSAGE_TAG_TARGET_EXTINGUISH, standbyCommand.toString(), NetworkManager::getNodeTime());
+    NetworkManager::sendMessage(message);
+
     NetworkMessage gameEndMessage(MESSAGE_TAG_GAME_END, "", NetworkManager::getNodeTime());
     NetworkManager::sendMessage(gameEndMessage);
 }
@@ -91,6 +103,9 @@ void HordeModule::onUpdate()
     // Check if we need to spawn a zombie
     if(timeOfNextSpawn != 0 && timeOfNextSpawn < millis())
     {
+
+        Serial.printf("We need to spawn a zombie\n");
+
         // Spawn a new zombie from our list of inactive ones
         std::vector<uint32_t> possibleZombies;
         for(auto zombieID : ConfigManager::configData.targets)
@@ -101,11 +116,14 @@ void HordeModule::onUpdate()
 
         if(!possibleZombies.empty())
         {
+            Serial.printf("We can spawn a zombie\n");
             // Pick one to spawn
             int spawnIndex = rand() % possibleZombies.size();
 
             uint32_t selectedZombie = possibleZombies[spawnIndex];
             unsigned long ulongSelectedZombie = static_cast<unsigned long>(selectedZombie);
+
+            Serial.printf("We're spawning a zombie with ID %lu\n", selectedZombie);
 
             // Spawn it, by
             // ... setting its state to 1
@@ -114,8 +132,12 @@ void HordeModule::onUpdate()
             targetActivationTime[ulongSelectedZombie] = millis();
             // ... and sending the activation message
 
-            String lightingEffect = LightingEncoder::encodeLightingEffect(0, 0, 0, NetworkManager::getNodeTime(), 0, 0, LightingEncoder::rgbToUint(0, 255, 0), LightingEncoder::rgbToUint(0, 0, 0));
-            NetworkMessage activationMessage = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, lightingEffect, NetworkManager::getNodeTime());
+            standbyCommand.pattern = LightingPattern::STATIC;
+            standbyCommand.primaryColor = LightingCommand::rgbToUint(0, 255, 0);
+
+            Serial.printf("Lighting up target!\nState change: 1\n");
+
+            NetworkMessage activationMessage = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, standbyCommand.toString(), NetworkManager::getNodeTime());
             NetworkManager::sendMessage(activationMessage, selectedZombie);
         }
 
@@ -144,28 +166,31 @@ void HordeModule::onUpdate()
             {
                 case 2:
                     // Turn yellow
-                    color = LightingEncoder::rgbToUint(255, 255, 0);
+                    color = LightingCommand::rgbToUint(255, 255, 0);
                     break;
                 case 3:
                 case 4:
                     // Turn red
-                    color = LightingEncoder::rgbToUint(255, 0, 0);
+                    color = LightingCommand::rgbToUint(255, 0, 0);
                     break;
                 default:
-                    color = LightingEncoder::rgbToUint(0, 255, 0);
+                    color = LightingCommand::rgbToUint(0, 255, 0);
                     break;
             }
+
+            standbyCommand.primaryColor = color;
+            standbyCommand.secondaryColor = LightingCommand::rgbToUint(255, 255, 255);
 
             String lightingEffect;
             if(targetStates[longTarget] == 4)
             {
-                lightingEffect = LightingEncoder::encodeLightingEffect(1, 1, 0, NetworkManager::getNodeTime(), 0, 200, color, LightingEncoder::rgbToUint(255, 255, 255));
+                standbyCommand.pattern = LightingPattern::BLINK_ALL;
             } else
             {
-                lightingEffect = LightingEncoder::encodeLightingEffect(0, 0, 0, NetworkManager::getNodeTime(), 0, 0, color, LightingEncoder::rgbToUint(255, 255, 255));
+                standbyCommand.pattern = LightingPattern::STATIC;
             }
 
-            NetworkMessage igniteMessage(MESSAGE_TAG_TARGET_IGNITE, lightingEffect, NetworkManager::getNodeTime());
+            NetworkMessage igniteMessage(MESSAGE_TAG_TARGET_IGNITE, standbyCommand.toString(), NetworkManager::getNodeTime());
             NetworkManager::sendMessage(igniteMessage, target);
         }
 
@@ -177,6 +202,9 @@ void HordeModule::onUpdate()
             return;
         }
     }
+
+    // Refresh the display
+    drawScreen();
 }
 
 void HordeModule::handleLeftMenuInput(InputSource _, bool state)
@@ -203,6 +231,9 @@ void HordeModule::handleNetworkMessage(NetworkMessage message)
 
     if(message.getTag() == MESSAGE_TAG_TARGET_HIT)
     {
+        standbyCommand.primaryColor = 0;
+        NetworkMessage extinguishMessage(MESSAGE_TAG_TARGET_EXTINGUISH, standbyCommand.toString(), NetworkManager::getNodeTime());
+        NetworkManager::sendMessage(extinguishMessage, message.getSender());
         // If the target was hit, extinguish it, add it to our score
         // Reset the target's state to zero
         targetStates[static_cast<unsigned long>(message.getSender())] = 0;

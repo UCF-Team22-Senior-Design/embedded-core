@@ -2,6 +2,9 @@
 
 Task WhackAMoleModule::moduleTask;
 
+LightingCommand WhackAMoleModule::standbyCommand(LightingPattern::STATIC, 0, 0, NetworkManager::getNodeTime(), 0, 0, LightingCommand::rgbToUint(0, 255, 0), LightingCommand::rgbToUint(0, 0, 0));
+LightingCommand WhackAMoleModule::onHitCommand(LightingPattern::BLINK_ALL, 0, 0, NetworkManager::getNodeTime(), 200, 100, LightingCommand::rgbToUint(255, 255, 255), LightingCommand::rgbToUint(0, 0, 0));
+
 int WhackAMoleModule::score = 0;
 unsigned long WhackAMoleModule::startTime = 0;
 
@@ -33,13 +36,12 @@ bool WhackAMoleModule::onWake()
     NetworkManager::sendMessage(message);
 
     // Ignite all targets
-    String lightingEffect = LightingEncoder::encodeLightingEffect(0, 0, 0, NetworkManager::getNodeTime(), 0, 0, LightingEncoder::rgbToUint(0, 255, 0), LightingEncoder::rgbToUint(0, 0, 0));
-    message = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, lightingEffect, NetworkManager::getNodeTime());
+    standbyCommand.primaryColor = LightingCommand::rgbToUint(0, 255, 0);
+    message = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, standbyCommand.toString(), NetworkManager::getNodeTime());
     NetworkManager::sendMessage(message);
 
     // Give all targets a "flash" lighting effect
-    lightingEffect = LightingEncoder::encodeLightingEffect(1, 0, 0, NetworkManager::getNodeTime(), 0, 100, LightingEncoder::rgbToUint(255, 255, 255), LightingEncoder::rgbToUint(10, 10, 10));
-    message = NetworkMessage(MESSAGE_TAG_TARGET_ON_HIT, lightingEffect, NetworkManager::getNodeTime());
+    message = NetworkMessage(MESSAGE_TAG_TARGET_ON_HIT, onHitCommand.toString(), NetworkManager::getNodeTime());
     NetworkManager::sendMessage(message);
 
     drawScreen();
@@ -73,13 +75,13 @@ void WhackAMoleModule::onUpdate()
     }
      
     // Extinguish all targets (they have been active too long)
-    String lightingEffect = LightingEncoder::encodeLightingEffect(0, 0, 0, NetworkManager::getNodeTime(), 0, 0, LightingEncoder::rgbToUint(0, 0, 0), LightingEncoder::rgbToUint(0, 0, 0));
-    NetworkMessage message = NetworkMessage(MESSAGE_TAG_TARGET_EXTINGUISH, lightingEffect, NetworkManager::getNodeTime());
+    standbyCommand.primaryColor = 0;
+    NetworkMessage message = NetworkMessage(MESSAGE_TAG_TARGET_EXTINGUISH, standbyCommand.toString(), NetworkManager::getNodeTime());
     NetworkManager::sendMessage(message);
     
     // Randomly ignite 1 - 4 targets
-    lightingEffect = LightingEncoder::encodeLightingEffect(1, 0, 0, NetworkManager::getNodeTime() + 500000, 0, 0, LightingEncoder::rgbToUint(0, 255, 0), LightingEncoder::rgbToUint(0, 0, 0));
-    message = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, lightingEffect, NetworkManager::getNodeTime());
+    standbyCommand.primaryColor = LightingCommand::rgbToUint(0, 255, 0);
+    message = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, standbyCommand.toString(), NetworkManager::getNodeTime());
     // 25% chance of igniting any individual target, at least 1 target must be lit
     bool noTargetsIgnited = true;
     while(noTargetsIgnited) {
@@ -119,8 +121,8 @@ void WhackAMoleModule::handleNetworkMessage(NetworkMessage message)
     if(message.getTag() == MESSAGE_TAG_TARGET_HIT)
     {
         // Extinguish hit target
-        String lightingEffect = LightingEncoder::encodeLightingEffect(0, 0, 0, NetworkManager::getNodeTime(), 0, 0, LightingEncoder::rgbToUint(0, 0, 0), LightingEncoder::rgbToUint(0, 0, 0));
-        message = NetworkMessage(MESSAGE_TAG_TARGET_EXTINGUISH, lightingEffect, NetworkManager::getNodeTime());
+        standbyCommand.primaryColor = 0;
+        message = NetworkMessage(MESSAGE_TAG_TARGET_EXTINGUISH, standbyCommand.toString(), NetworkManager::getNodeTime());
         NetworkManager::sendMessage(message, message.getSender());
 
         // Increment score

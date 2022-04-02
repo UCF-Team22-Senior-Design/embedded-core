@@ -2,7 +2,7 @@
 
 #include "../managers/display_manager.h"
 #include "../managers/network_manager.h"
-#include "helpers/lighting_encoder.h"
+#include "../models/lighting_command.h"
 
 class TargetTimingModule : public Module
 {
@@ -11,6 +11,9 @@ private:
     static uint32_t lastFired;
     static uint32_t lastHit;
     static uint32_t lastID;
+
+    static LightingCommand standbyCommand;
+    static LightingCommand onHitCommand;
 
     static void handleNetworkMessage(NetworkMessage message);
     static void handleTriggerInput(InputSource _, bool state);

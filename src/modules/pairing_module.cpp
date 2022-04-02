@@ -77,6 +77,7 @@ void PairingModule::triggerCallback(InputSource source, bool state)
 
 void PairingModule::onUpdate()
 {
+    
 }
 
 void PairingModule::leftMenuCallback(InputSource _, bool state)
