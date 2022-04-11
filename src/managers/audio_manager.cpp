@@ -27,6 +27,7 @@ void AudioManager::initialize(Scheduler *scheduler)
     out->SetPinout(26, 25, 19);
 
     // Load volume settings from the configuration manager
+    audioLogger = &Serial;
     out->SetGain(ConfigManager::configData.volume);
     wav->begin(in, out);
 

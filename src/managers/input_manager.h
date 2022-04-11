@@ -47,6 +47,7 @@ public:
 
     static void initialize(Scheduler *scheduler);
     static bool getInputState(InputSource source);
+    static void simulateButtonPress(InputSource source, bool state);
     static void registerInputCallback(InputReceivedCallback callback, InputSource source = InputSource::ALL);
     static void deregisterInputCallback(InputReceivedCallback callback, InputSource source = InputSource::ALL);
 };

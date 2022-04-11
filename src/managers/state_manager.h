@@ -11,6 +11,7 @@ enum SystemState {
     Play,
     Results,
     TargetTiming,
+    StandbyTest,
     GameOneShot,
     GameTimeTrial,
     GameWhackAMole,

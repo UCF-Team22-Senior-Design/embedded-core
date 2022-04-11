@@ -35,6 +35,8 @@ public:
     static void registerCallback(NetworkMessageCallback callback, String tagFilter = "NONE");
     static void deregisterCallback(NetworkMessageCallback callback, String tagFilter);
 
+    static int getNumNodes();
+
     static uint32_t getNodeTime();
     static uint32_t getNodeID();
 };

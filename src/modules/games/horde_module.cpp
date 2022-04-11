@@ -16,6 +16,7 @@ Horde mode:
 */
 
 int HordeModule::score = 0;
+int HordeModule::zombieSpeed = 0;
     /* Target State Possibilities:
      * 0 - dead / inactive
      * 1 - active / far
@@ -44,6 +45,7 @@ bool HordeModule::onWake()
     // Reset our score
     score = 0;
     startTime = millis();
+    zombieSpeed = TARGET_INCREMENT_VALUE;
 
     // Set our timer to spawn a zombie when we start
     timeOfNextSpawn = millis();
@@ -190,6 +192,7 @@ void HordeModule::onUpdate()
                 standbyCommand.pattern = LightingPattern::STATIC;
             }
 
+            Serial.printf("Sending updated ignite message: %s\n", standbyCommand.toString());
             NetworkMessage igniteMessage(MESSAGE_TAG_TARGET_IGNITE, standbyCommand.toString(), NetworkManager::getNodeTime());
             NetworkManager::sendMessage(igniteMessage, target);
         }
@@ -203,8 +206,13 @@ void HordeModule::onUpdate()
         }
     }
 
-    // Refresh the display
-    drawScreen();
+    static unsigned long lastRefresh = 0;
+    if(millis() - lastRefresh > 1000)
+    {
+        // Refresh the display
+        drawScreen();
+        lastRefresh = millis();
+    }
 }
 
 void HordeModule::handleLeftMenuInput(InputSource _, bool state)
@@ -238,6 +246,12 @@ void HordeModule::handleNetworkMessage(NetworkMessage message)
         // Reset the target's state to zero
         targetStates[static_cast<unsigned long>(message.getSender())] = 0;
         score++;
+
+        // Speed up the zombies
+        zombieSpeed = zombieSpeed * 0.95;
+        // Clamp the zombie speed
+        if(zombieSpeed < 200) zombieSpeed = 200;
+
         drawScreen();
     }
 }

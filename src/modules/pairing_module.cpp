@@ -9,7 +9,7 @@ Task PairingModule::moduleTask;
  */
 void PairingModule::initialize(Scheduler *userScheduler)
 {
-    moduleTask.set(TASK_MILLISECOND * 16, TASK_FOREVER, &onUpdate, &onWake, &onSleep);
+    moduleTask.set(TASK_SECOND, TASK_FOREVER, &onUpdate, &onWake, &onSleep);
     (*userScheduler).addTask(moduleTask);
 }
 
@@ -148,4 +148,8 @@ void PairingModule::drawScreen(String bodyMessage)
     String titleMessage = String(ConfigManager::configData.targets.size()) + " targets paired";
     // Draw our message to the screen
     DisplayManager::drawBasicScreen("BACK", "UNPAIR ALL", titleMessage.c_str(), bodyMessage.c_str());
+    
+    // Draw the number of nodes to the screen
+    String nodeMessage = String(NetworkManager::getNumNodes()) + "d";
+    DisplayManager::drawTopCornerOverlay(nodeMessage.c_str());
 }

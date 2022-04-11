@@ -28,7 +28,7 @@ private:
     static bool enabled;
     static Task taskLaserDimmer;
 
-    static const unsigned long PULSE_LENGTH = 10;
+    static const unsigned long PULSE_LENGTH = 20;
 public:
     static void initialize(Scheduler* userScheduler);
     static void setLaserMode(LaserMode newMode);

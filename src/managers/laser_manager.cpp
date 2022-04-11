@@ -5,7 +5,7 @@
 //
 // C++ is stupid sometimes.
 bool LaserManager::hasBeenInitialized = false;
-Task LaserManager::taskLaserDimmer(TASK_MILLISECOND *PULSE_LENGTH, TASK_ONCE, &LaserManager::dimLaserCallback);
+Task LaserManager::taskLaserDimmer(TASK_MILLISECOND * PULSE_LENGTH, TASK_ONCE, &LaserManager::dimLaserCallback);
 
 LaserMode LaserManager::laserMode = LaserMode::PULSE_ON_TRIGGER;
 bool LaserManager::enabled = false;

@@ -8,6 +8,7 @@ const char *ReadyModule::STRING_MENU_OPTION_SECOND = "Pair Targets";
 const char *ReadyModule::STRING_MENU_OPTION_THIRD = "Change Settings";
 const char *ReadyModule::STRING_MENU_OPTION_FOURTH = "About";
 const char *ReadyModule::STRING_MENU_OPTION_FIFTH = "Target Timing";
+const char *ReadyModule::STRING_MENU_OPTION_SIXTH = "Standby Test";
 
 const char *ReadyModule::STRING_SETTINGS_MENU_TITLE = "Settings";
 const char *ReadyModule::STRING_SETTINGS_MENU_OPTION_FIRST = "Mute Audio";
@@ -29,7 +30,7 @@ const char *ReadyModule::STRING_GAME_MENU_OPTION_THIRD = "Horde";
 const char *ReadyModule::STRING_GAME_MENU_OPTION_FOURTH = "Time Trial";
 const char *ReadyModule::STRING_GAME_MENU_OPTION_FIFTH = "Back";
 
-MenuHelper ReadyModule::mainMenuHelper(STRING_MENU_TITLE, {STRING_MENU_OPTION_FIRST, STRING_MENU_OPTION_SECOND, STRING_MENU_OPTION_THIRD, STRING_MENU_OPTION_FOURTH, STRING_MENU_OPTION_FIFTH});
+MenuHelper ReadyModule::mainMenuHelper(STRING_MENU_TITLE, {STRING_MENU_OPTION_FIRST, STRING_MENU_OPTION_SECOND, STRING_MENU_OPTION_THIRD, STRING_MENU_OPTION_FOURTH, STRING_MENU_OPTION_FIFTH, STRING_MENU_OPTION_SIXTH});
 MenuHelper ReadyModule::settingsMenuHelper(STRING_SETTINGS_MENU_TITLE, {STRING_SETTINGS_MENU_OPTION_FIRST, STRING_SETTINGS_MENU_OPTION_SECOND, STRING_SETTINGS_MENU_OPTION_THIRD, STRING_SETTINGS_MENU_OPTION_FOURTH, STRING_SETTINGS_MENU_OPTION_FIFTH, STRING_SETTINGS_MENU_OPTION_SIXTH, STRING_SETTINGS_MENU_OPTION_SEVENTH, STRING_SETTINGS_MENU_OPTION_EIGHTH, STRING_SETTINGS_MENU_OPTION_NINTH, STRING_SETTINGS_MENU_OPTION_TENTH, STRING_SETTINGS_MENU_OPTION_ELEVENTH});
 MenuHelper ReadyModule::gameModeMenuHelper(STRING_GAME_MENU_TITLE, {STRING_GAME_MENU_OPTION_FIRST, STRING_GAME_MENU_OPTION_SECOND, STRING_GAME_MENU_OPTION_THIRD, STRING_GAME_MENU_OPTION_FOURTH, STRING_GAME_MENU_OPTION_FIFTH});
 
@@ -168,6 +169,9 @@ bool ReadyModule::handleMainMenuSelection()
         // Move into target timing page
         StateManager::setSystemState(SystemState::TargetTiming);
         break;
+    case 5:
+        // Move into standby testing page
+        StateManager::setSystemState(SystemState::StandbyTest);
     default:
         // Do nothing, really.
         break;

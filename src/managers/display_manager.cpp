@@ -146,3 +146,11 @@ void DisplayManager::printTitle(const char *title)
     display.setCursor(0, 0);
     printCentered(title, 0, true);
 }
+
+void DisplayManager::drawTopCornerOverlay(const char* text)
+{
+    display.setCursor(0, 0);
+    display.print(text);
+
+    display.display();
+}

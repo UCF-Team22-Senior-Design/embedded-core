@@ -192,3 +192,13 @@ void InputManager::inputCheckerCallback()
         lastTriggerButtonPress = now;
     }
 }
+
+void InputManager::simulateButtonPress(InputSource source, bool state)
+{
+    // Simulate a button press for the given input
+    if(state != inputStates[source])
+    {
+        inputStates[source] = state;
+        inputHappened(source, state);
+    }
+}

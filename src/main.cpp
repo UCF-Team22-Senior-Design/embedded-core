@@ -49,6 +49,7 @@ void setup() {
   ReadyModule::initialize(&userScheduler);
   PairingModule::initialize(&userScheduler);
   TargetTimingModule::initialize(&userScheduler);
+  StandbyTestModule::initialize(&userScheduler);
   OneShotModule::initialize(&userScheduler);
   TimeTrialModule::initialize(&userScheduler);
   WhackAMoleModule::initialize(&userScheduler);
@@ -59,6 +60,7 @@ void setup() {
   StateManager::registerStateTask(SystemState::Ready,        ReadyModule::getTask());
   StateManager::registerStateTask(SystemState::Pair,         PairingModule::getTask());
   StateManager::registerStateTask(SystemState::TargetTiming, TargetTimingModule::getTask());
+  StateManager::registerStateTask(SystemState::StandbyTest,  StandbyTestModule::getTask());
 
   StateManager::registerStateTask(SystemState::GameOneShot,  OneShotModule::getTask());
   StateManager::registerStateTask(SystemState::GameTimeTrial,  TimeTrialModule::getTask());

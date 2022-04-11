@@ -154,3 +154,8 @@ uint32_t NetworkManager::getNodeID()
 {
     return mesh.getNodeId();
 }
+
+int NetworkManager::getNumNodes()
+{
+    return mesh.getNodeList().size();
+}

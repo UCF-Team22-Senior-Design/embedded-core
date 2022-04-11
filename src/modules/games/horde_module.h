@@ -16,6 +16,7 @@ private:
     static Task moduleTask;
 
     static int score;
+    static int zombieSpeed;
     /* Target State Possibilities:
      * 0 - dead / inactive
      * 1 - active / far

@@ -28,6 +28,7 @@ public:
     // Basic screen functions
     static void drawSimpleScreen(const char* text, int textSize = 1);
     static void drawBasicScreen(const char* option1, const char* option2, const char* title, const char* helperText);
+    static void drawTopCornerOverlay(const char* text);
     static void drawFourOptionSelectScreen(const char* title, const char* option1, const char* option2, const char* option3, const char* option4, int activeOption, const char* printOption1, const char* printOption2);
 
     static void initialize();
