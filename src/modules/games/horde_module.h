@@ -8,7 +8,7 @@
 #include "../results_module.h"
 
 
-#define TARGET_INCREMENT_VALUE 8000
+#define TARGET_INCREMENT_VALUE 3000
 
 class HordeModule : public Module
 {
@@ -17,6 +17,7 @@ private:
 
     static int score;
     static int zombieSpeed;
+    static float spawnFactor;
     /* Target State Possibilities:
      * 0 - dead / inactive
      * 1 - active / far

@@ -36,7 +36,6 @@ void setup() {
   ConfigManager::loadData();
 
   // Shared managers
-  PWMManager::initialize();
   InputManager::initialize(&userScheduler);
   NetworkManager::initialize(&userScheduler);
   AudioManager::initialize(&userScheduler);
@@ -47,6 +46,7 @@ void setup() {
 
   // Register the gameplay modules to the state manager
   ReadyModule::initialize(&userScheduler);
+  AboutModule::initialize(&userScheduler);
   PairingModule::initialize(&userScheduler);
   TargetTimingModule::initialize(&userScheduler);
   StandbyTestModule::initialize(&userScheduler);
@@ -57,23 +57,18 @@ void setup() {
 
   ResultsModule::initialize(&userScheduler);
 
-  StateManager::registerStateTask(SystemState::Ready,        ReadyModule::getTask());
-  StateManager::registerStateTask(SystemState::Pair,         PairingModule::getTask());
-  StateManager::registerStateTask(SystemState::TargetTiming, TargetTimingModule::getTask());
-  StateManager::registerStateTask(SystemState::StandbyTest,  StandbyTestModule::getTask());
+  StateManager::registerStateTask(SystemState::Ready,          ReadyModule::getTask());
+  StateManager::registerStateTask(SystemState::Pair,           PairingModule::getTask());
+  StateManager::registerStateTask(SystemState::About,          AboutModule::getTask());
+  StateManager::registerStateTask(SystemState::TargetTiming,   TargetTimingModule::getTask());
+  StateManager::registerStateTask(SystemState::StandbyTest,    StandbyTestModule::getTask());
 
-  StateManager::registerStateTask(SystemState::GameOneShot,  OneShotModule::getTask());
+  StateManager::registerStateTask(SystemState::GameOneShot,    OneShotModule::getTask());
   StateManager::registerStateTask(SystemState::GameTimeTrial,  TimeTrialModule::getTask());
-  StateManager::registerStateTask(SystemState::GameWhackAMole,  WhackAMoleModule::getTask());
+  StateManager::registerStateTask(SystemState::GameWhackAMole, WhackAMoleModule::getTask());
   StateManager::registerStateTask(SystemState::GameHorde,      HordeModule::getTask());
 
-  StateManager::registerStateTask(SystemState::Results,      ResultsModule::getTask());
-
-/*  StateManager::registerStateTask(SystemState::Play,    PlayModule::getTask());
-#ifdef PLATFORM_CONTROLLER
-  StateManager::registerStateTask(SystemState::Results, ResultsModule::getTask());
-#endif
-*/
+  StateManager::registerStateTask(SystemState::Results,        ResultsModule::getTask());
 
   // Change our state to ready
   StateManager::setSystemState(SystemState::Ready);

@@ -26,6 +26,9 @@ bool ResultsModule::onWake()
                             scoreLabel;
     DisplayManager::drawBasicScreen("EXIT", "", "Congratulations!", messageString.c_str());
 
+    // Play our game-over audio
+    AudioManager::playAudio("/audio/game-over.wav");
+
     return true;
 }
 

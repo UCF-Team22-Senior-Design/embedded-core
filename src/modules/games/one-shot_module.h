@@ -10,9 +10,10 @@ class OneShotModule : public Module
 private:
     static Task moduleTask;
 
-    static bool hasShot;
+    static int numShots;
     static int score;
     static unsigned long lastShotTime;
+    static const int maxShots = 3;
 
     static LightingCommand standbyCommand;
     static LightingCommand onHitCommand;

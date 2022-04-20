@@ -77,7 +77,8 @@ void PairingModule::triggerCallback(InputSource source, bool state)
 
 void PairingModule::onUpdate()
 {
-    
+    String nodeMessage = String(NetworkManager::getNumNodes()) + "d";
+    DisplayManager::drawTopCornerOverlay(nodeMessage.c_str());
 }
 
 void PairingModule::leftMenuCallback(InputSource _, bool state)

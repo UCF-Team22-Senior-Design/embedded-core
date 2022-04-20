@@ -143,6 +143,6 @@ void TargetTimingModule::refreshDisplay()
 
     // Calculate the time between the last shot and last hit.
     uint32_t deltaTime = lastHit - lastFired;
-    String bodyString = "TargetID: " + String(lastID) + "\nTrigger: " + String(lastFired) + "ns\nHit: " + String(lastHit) + "ns\nDelta: " + String(deltaTime) + "ns";
+    String bodyString = "TargetID: " + String(lastID) + "\nTrigger: " + String(lastFired) + "us\nHit: " + String(lastHit) + "us\nDelta: " + String(deltaTime) + "us";
     DisplayManager::drawBasicScreen("BACK", "CLEAR", "Shot Timer", bodyString.c_str());
 }

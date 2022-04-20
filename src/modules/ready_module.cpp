@@ -163,7 +163,7 @@ bool ReadyModule::handleMainMenuSelection()
         break;
     case 3:
         // Move into about page
-        // TODO: Implement About Page
+        StateManager::setSystemState(SystemState::About);
         break;
     case 4:
         // Move into target timing page

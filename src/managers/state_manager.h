@@ -10,6 +10,7 @@ enum SystemState {
     Pair,
     Play,
     Results,
+    About,
     TargetTiming,
     StandbyTest,
     GameOneShot,

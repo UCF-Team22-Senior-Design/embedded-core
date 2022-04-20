@@ -17,6 +17,7 @@ Horde mode:
 
 int HordeModule::score = 0;
 int HordeModule::zombieSpeed = 0;
+float HordeModule::spawnFactor = 1.0;
     /* Target State Possibilities:
      * 0 - dead / inactive
      * 1 - active / far
@@ -137,14 +138,12 @@ void HordeModule::onUpdate()
             standbyCommand.pattern = LightingPattern::STATIC;
             standbyCommand.primaryColor = LightingCommand::rgbToUint(0, 255, 0);
 
-            Serial.printf("Lighting up target!\nState change: 1\n");
-
             NetworkMessage activationMessage = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, standbyCommand.toString(), NetworkManager::getNodeTime());
             NetworkManager::sendMessage(activationMessage, selectedZombie);
         }
 
-        // Reset the spawn timer
-        timeOfNextSpawn = millis() + rand() % 5000 + 1000;
+        // Reset the spawn timer to anywhere from one to six seconds away
+        timeOfNextSpawn = millis() + (rand() % 5000 + 500) * spawnFactor;
     }
     
     // Change the state of all zombies who need to move to the next state
@@ -192,7 +191,6 @@ void HordeModule::onUpdate()
                 standbyCommand.pattern = LightingPattern::STATIC;
             }
 
-            Serial.printf("Sending updated ignite message: %s\n", standbyCommand.toString());
             NetworkMessage igniteMessage(MESSAGE_TAG_TARGET_IGNITE, standbyCommand.toString(), NetworkManager::getNodeTime());
             NetworkManager::sendMessage(igniteMessage, target);
         }
@@ -242,14 +240,20 @@ void HordeModule::handleNetworkMessage(NetworkMessage message)
         standbyCommand.primaryColor = 0;
         NetworkMessage extinguishMessage(MESSAGE_TAG_TARGET_EXTINGUISH, standbyCommand.toString(), NetworkManager::getNodeTime());
         NetworkManager::sendMessage(extinguishMessage, message.getSender());
+
         // If the target was hit, extinguish it, add it to our score
         // Reset the target's state to zero
         targetStates[static_cast<unsigned long>(message.getSender())] = 0;
         score++;
 
+        // Play a successful hit event noise
+        AudioManager::playAudio("/audio/hit-success.wav");
+
         // Speed up the zombies
-        zombieSpeed = zombieSpeed * 0.95;
+        zombieSpeed = zombieSpeed * 0.90;
+        spawnFactor = spawnFactor * 0.90;
         // Clamp the zombie speed
+        if(spawnFactor < 0.1) spawnFactor = 0.1;
         if(zombieSpeed < 200) zombieSpeed = 200;
 
         drawScreen();

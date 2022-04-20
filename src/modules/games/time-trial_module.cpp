@@ -104,21 +104,18 @@ void TimeTrialModule::handleNetworkMessage(NetworkMessage message)
     {
         // Decrement num targets lit
         numTargetsIgnited--;
+            
+        // Extinguish hit target
+        standbyCommand.primaryColor = 0;
+        NetworkMessage extinguishMessage = NetworkMessage(MESSAGE_TAG_TARGET_EXTINGUISH, standbyCommand.toString(), NetworkManager::getNodeTime());
+        NetworkManager::sendMessage(extinguishMessage, message.getSender());
 
         // If some targets are still alive..
-        if(numTargetsIgnited > 0) {
-            
-            // Extinguish hit target
-            standbyCommand.primaryColor = LightingCommand::rgbToUint(0, 0, 0);
-            message = NetworkMessage(MESSAGE_TAG_TARGET_EXTINGUISH, standbyCommand.toString(), NetworkManager::getNodeTime());
-            NetworkManager::sendMessage(message, message.getSender());
-
-        } else {
-            
+        if(numTargetsIgnited <= 0) {
             // Ignite all targets
             standbyCommand.primaryColor = LightingCommand::rgbToUint(0, 255, 0);
-            message = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, standbyCommand.toString(), NetworkManager::getNodeTime());
-            NetworkManager::sendMessage(message);
+            NetworkMessage igniteMessage = NetworkMessage(MESSAGE_TAG_TARGET_IGNITE, standbyCommand.toString(), NetworkManager::getNodeTime());
+            NetworkManager::sendMessage(igniteMessage);
             
             // Reset num targets counter
             numTargetsIgnited = ConfigManager::configData.targets.size();
@@ -126,6 +123,9 @@ void TimeTrialModule::handleNetworkMessage(NetworkMessage message)
 
         // Increment score
         score++;
+
+        // Play hit audio
+        AudioManager::playAudio("/audio/hit-success.wav");
 
         drawScreen();
     }

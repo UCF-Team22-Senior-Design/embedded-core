@@ -10,7 +10,7 @@ unsigned long WhackAMoleModule::startTime = 0;
 
 void WhackAMoleModule::initialize(Scheduler *userScheduler)
 {
-    moduleTask.set(TASK_SECOND, TASK_FOREVER, &onUpdate, &onWake, &onSleep);
+    moduleTask.set(TASK_SECOND * 2, TASK_FOREVER, &onUpdate, &onWake, &onSleep);
 
     // Bind it to our scheduler
     (*userScheduler).addTask(moduleTask);
@@ -122,11 +122,14 @@ void WhackAMoleModule::handleNetworkMessage(NetworkMessage message)
     {
         // Extinguish hit target
         standbyCommand.primaryColor = 0;
-        message = NetworkMessage(MESSAGE_TAG_TARGET_EXTINGUISH, standbyCommand.toString(), NetworkManager::getNodeTime());
-        NetworkManager::sendMessage(message, message.getSender());
+        NetworkMessage newMessage = NetworkMessage(MESSAGE_TAG_TARGET_EXTINGUISH, standbyCommand.toString(), NetworkManager::getNodeTime());
+        NetworkManager::sendMessage(newMessage, message.getSender());
 
         // Increment score
         score++;
+
+        // Play audio effect
+        AudioManager::playAudio("/audio/hit-success.wav");
 
         // Update Play screen
         drawScreen();

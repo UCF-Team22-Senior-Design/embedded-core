@@ -150,6 +150,7 @@ void DisplayManager::printTitle(const char *title)
 void DisplayManager::drawTopCornerOverlay(const char* text)
 {
     display.setCursor(0, 0);
+    display.fillRect(0, 0, FONT_WIDTH * 2, FONT_HEIGHT, SSD1306_BLACK);
     display.print(text);
 
     display.display();

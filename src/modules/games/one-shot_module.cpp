@@ -7,7 +7,7 @@ LightingCommand OneShotModule::standbyCommand(LightingPattern::STATIC, 0, 0, Net
 LightingCommand OneShotModule::onHitCommand(LightingPattern::BLINK_ALL, 0, 0, NetworkManager::getNodeTime(), 200, 100, LightingCommand::rgbToUint(255, 255, 255), LightingCommand::rgbToUint(0, 0, 0));
 
 
-bool OneShotModule::hasShot = false;
+int OneShotModule::numShots = 0;
 int OneShotModule::score = 0;
 unsigned long OneShotModule::lastShotTime = 0;
 
@@ -24,7 +24,7 @@ bool OneShotModule::onWake()
     Serial.println("[OneShotModule] I've been woken from sleep");
 
     // Reset our variables
-    hasShot = false;
+    numShots = maxShots;
     score = 0;
     lastShotTime = 0;
 
@@ -71,7 +71,7 @@ void OneShotModule::onSleep()
 void OneShotModule::onUpdate()
 {
     // If "hasShot" is true & time between last shot & now is greater than timeout, end game
-    if(hasShot && (millis() - lastShotTime > 500))
+    if((numShots <= 0) && (millis() - lastShotTime > 200))
     {
         // User has lost - send them to results page.
         ResultsModule::setResults("One-Shot", score, "targets");
@@ -88,7 +88,7 @@ void OneShotModule::handleTriggerInput(InputSource _, bool state)
     Serial.println("[OneShotModule] Trigger Pulled!");
 
     // Check if we've shot already
-    if(hasShot)
+    if(numShots <= 0)
     {
         // The user has missed and is firing again
         // Send them to the shadow realm - er, results page
@@ -98,8 +98,10 @@ void OneShotModule::handleTriggerInput(InputSource _, bool state)
         return;
     }
 
-    hasShot = true;
+    numShots--;
     lastShotTime = millis();
+
+    drawScreen();
 }
 
 void OneShotModule::handleLeftMenuInput(InputSource _, bool state)
@@ -127,9 +129,12 @@ void OneShotModule::handleNetworkMessage(NetworkMessage message)
     if(message.getTag() == MESSAGE_TAG_TARGET_HIT)
     {
         // Reset our shot
-        hasShot = false;
+        numShots = maxShots;
         // Increment score
         score++;
+
+        // Play fun audio
+        AudioManager::playAudio("/audio/hit-success.wav");
 
         drawScreen();
     }
@@ -137,6 +142,6 @@ void OneShotModule::handleNetworkMessage(NetworkMessage message)
 
 void OneShotModule::drawScreen()
 {
-    String scoreMessage = "Score: " + String(score) + " Targets";
+    String scoreMessage = "Score: " + String(score) + " Targets\nShots Left: " + String(numShots);
     DisplayManager::drawBasicScreen("QUIT", "", "One-Shot", scoreMessage.c_str());
 }
