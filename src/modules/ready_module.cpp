@@ -26,29 +26,37 @@ bool ReadyModule::onWake()
 
     Serial.println("[ReadyModule] I've been woken from sleep");
 
-    LightingManager::setLoop(false);
-    LightingManager::setClearOnStop(false);
-    LightingManager::setTimeout(200);
+    LightingCommand lightingCommand(LightingPattern::STATIC, false, false, 0, 201, 0, 0, 0);
 
     // Set the lights to be a static green color or a static red color, depending on pairing state
     bool isPaired = (ConfigManager::configData.controller != 0);
     if (isPaired)
     {
-        LightingManager::setPrimaryColor(0, 120, 0);
+        lightingCommand.primaryColor = LightingCommand::rgbToUint(0, 120, 0);
     }
     else
     {
-        LightingManager::setPrimaryColor(120, 0, 0);
+        lightingCommand.primaryColor = LightingCommand::rgbToUint(120, 0, 0);
     }
 
-    LightingManager::setSecondaryColor(0, 0, 0);
-    LightingManager::setPattern(LightingPattern::STATIC);
+    LightingManager::setStandbyLightingCommand(lightingCommand);
+
+    // Create our blink pattern
+    LightingCommand blinkPattern(
+        LightingPattern::BLINK_ALL, false, false, 0, 201, 100, LightingCommand::rgbToUint(255, 255, 255), 0
+    );
+
+    blinkPattern.secondaryColor = lightingCommand.primaryColor;
+    LightingManager::setOnHitLightingCommand(blinkPattern);
+
     LightingManager::startPattern();
 
     // Register our callbacks
     InputManager::registerInputCallback(&handlePhotoInput, InputSource::PHOTOTRANSISTOR);
     InputManager::registerInputCallback(&handlePairingInput, InputSource::BUTTON_PAIR);
     NetworkManager::registerCallback(&handleNetworkMessage);
+
+  AudioManager::playAudio("/audio/owin31.wav");
 
     return true;
 }
@@ -82,26 +90,6 @@ void ReadyModule::handlePhotoInput(InputSource _, bool state)
     // Only act when the input goes from low to high
     if (state)
         return;
-
-    Serial.println("[ReadyModule] I've been shot!");
-
-    // Currently? blink white once then return to our normal color
-    LightingManager::stopPattern();
-    LightingManager::setPattern(LightingPattern::BLINK_ALL);
-    LightingManager::setTimeout(200);
-    LightingManager::setPrimaryColor(255, 255, 255);
-    
-    bool isPaired = (ConfigManager::configData.controller != 0);
-    if (isPaired)
-    {
-        LightingManager::setSecondaryColor(0, 120, 0);
-    }
-    else
-    {
-        LightingManager::setSecondaryColor(120, 0, 0);
-    }
-    
-    LightingManager::startPattern();
 }
 
 void ReadyModule::handlePairingInput(InputSource _, bool state)
@@ -109,6 +97,8 @@ void ReadyModule::handlePairingInput(InputSource _, bool state)
     // Only act when the input goes from high to low
     if (!state)
         return;
+
+    AudioManager::playAudio("/audio/owin31.wav");
 
     // Shift into the pairing state
     StateManager::setSystemState(SystemState::Pair);

@@ -4,7 +4,7 @@ Task PairingModule::moduleTask;
 
 void PairingModule::initialize(Scheduler *userScheduler)
 {
-    moduleTask.set(TASK_MILLISECOND * 16, TASK_FOREVER, &onUpdate, &onWake, &onSleep);
+    moduleTask.set(TASK_SECOND, TASK_FOREVER, &onUpdate, &onWake, &onSleep);
 
     // Bind it to our scheduler
     (*userScheduler).addTask(moduleTask);
@@ -23,11 +23,13 @@ bool PairingModule::onWake()
     NetworkManager::sendMessage(forgetMessage);
 
     // Set the lights to be a static yellow color
-    LightingManager::setLoop(false);
-    LightingManager::setClearOnStop(false);
-    LightingManager::setPrimaryColor(120, 120, 0);
-    LightingManager::setSecondaryColor(0, 0, 0);
-    LightingManager::setPattern(LightingPattern::STATIC);
+    LightingManager::setStandbyLightingCommand(LightingCommand(
+        LightingPattern::STATIC, false, false, 0, 0, 0, LightingCommand::rgbToUint(255, 255, 0), LightingCommand::rgbToUint(0, 0, 0)));
+    // Establish our blinky command
+    LightingManager::setOnHitLightingCommand(LightingCommand(
+        LightingPattern::BLINK_ALL, false, false, 0, 201, 100, LightingCommand::rgbToUint(255, 255, 255), LightingCommand::rgbToUint(120, 120, 0)));
+    
+    // Start our standby
     LightingManager::startPattern();
 
     // Register our callbacks
@@ -60,14 +62,6 @@ void PairingModule::handlePhotoInput(InputSource _, bool state)
     if(state) return;
 
     Serial.println("[PairingModule] I've been shot!");
-
-    // Currently? blink white once then return to our normal color
-    LightingManager::stopPattern();
-    LightingManager::setPattern(LightingPattern::BLINK_ALL);
-    LightingManager::setPrimaryColor(255, 255, 255);
-    LightingManager::setSecondaryColor(120, 120, 0);
-    LightingManager::setTimeout(200);
-    LightingManager::startPattern();
 
     // Also release a pairing request packet if we're not currently paired
     if(ConfigManager::configData.controller == 0)

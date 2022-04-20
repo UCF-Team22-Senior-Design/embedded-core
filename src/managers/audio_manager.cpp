@@ -20,10 +20,12 @@ void AudioManager::initialize(Scheduler *scheduler)
 
     // Create our audio sources & outputs
     in  = new AudioFileSourceSPIFFS("/audio/owin31.wav");
+    Serial.printf("Size of audio file: %d\n", in->getSize());
     wav = new AudioGeneratorWAV();
     out = new AudioOutputI2S(0, 0);
+    out->SetRate(16000);
     out->SetPinout(26, 25, 19);
-    out->SetGain(0.25);
+    out->SetGain(0.5);
     wav->begin(in, out);
 
     // Set up our audio playback tasks
@@ -66,16 +68,21 @@ bool AudioManager::isAudioPlaying()
  */
 void AudioManager::playAudio(String fileName)
 {
+    Serial.printf("Playing new audio %s\n", fileName.c_str());
     // If there is currently audio playing, stop it.
     if(isAudioPlaying())
     {
+        Serial.printf("Audio is already playing, stopping.\n");
         wav->stop();
     }
 
     taskAudioUpdate.disable();
 
+    ConfigManager::saveData();
+
     // Load the thing as a source
     in = new AudioFileSourceSPIFFS(fileName.c_str());
+    out->SetGain(0.75);
     wav->begin(in, out);
 
     // Restart our audio task

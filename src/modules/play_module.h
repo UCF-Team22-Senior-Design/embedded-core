@@ -6,6 +6,7 @@ class PlayModule : public Module
 {
 private:
     static Task moduleTask;
+    static bool enabled;
 
     static void handleNetworkMessage(NetworkMessage message);
     static void handlePhotoInput(InputSource _, bool state);

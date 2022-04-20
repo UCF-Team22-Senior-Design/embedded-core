@@ -5,19 +5,15 @@
 #include <Adafruit_NeoPixel.h>
 
 #include "../models/pinouts.h"
+#include "../models/lighting_command.h"
+#include "managers/input_manager.h"
 #include "network_manager.h"
 
 #define PIXELS_PER_SEGMENT 3
 #define NUM_SEGMENTS 4
 #define NUM_PIXELS PIXELS_PER_SEGMENT * NUM_SEGMENTS
 
-enum LightingPattern
-{
-    STATIC,
-    BLINK_ALL,
-    MARCHING_BLINK,
-    // Add more patterns as they are developed
-};
+typedef void(*LightingEndedCallback)();
 
 class LightingManager
 {
@@ -27,12 +23,12 @@ private:
     static void patternBlinkAll();
     static void patternMarchingBlink();
 
-    // These are helper functions to assist in the encoding / decoding of the hex-arrays
-    static unsigned long arrayToUL(const char* byteArray);
-    static uint32_t arrayToUint(const char* byteArray);
-    static int hexChar2Int(char ch);
-
     // Internal state information
+    static LightingCommand* activeLightingCommand;
+    static LightingCommand  standbyLightingCommand;
+    static LightingCommand  onHitLightingCommand;
+
+    /*
     static LightingPattern currentLightingPattern;
     static bool loop;
     static bool clearOnStop;
@@ -41,6 +37,11 @@ private:
     static unsigned long effectFrequency;
     static uint32_t primaryColor;
     static uint32_t secondaryColor;
+    */
+
+    static unsigned long timeStart; 
+    static bool inStandby;
+    static void onHitHandler(InputSource _, bool state);
 
     static void lightingUpdate();
     static Task taskLightingUpdate;
@@ -52,17 +53,11 @@ public:
 
     static void stopPattern();
     static void startPattern();
+    static void resetLightingState();
 
-    static void setPrimaryColor(uint8_t r, uint8_t g, uint8_t b);
-    static void setSecondaryColor(uint8_t r, uint8_t g, uint8_t b);
-    static void setTimeout(unsigned long timeout);
-    static void setFrequency(unsigned long frequency);
-    static void setPattern(LightingPattern pattern);
-    static void setClearOnStop(bool newClearOnStop);
-    static void setLoop(bool loopValue);
-
-    static void setEffect(const char* effectCode);
-
+    static void setStandbyLightingCommand(LightingCommand newStandbyCommand);
+    static void setOnHitLightingCommand(LightingCommand newOnHitCommand);
+    
     static LightingPattern getCurrentPattern();
     static bool isPlaying();
 };

@@ -56,8 +56,6 @@ void setup() {
 
   Serial.println("{Main} Setup done.");
 
-  AudioManager::playAudio("/audio/owin31.wav");
-
   StateManager::setSystemState(SystemState::Ready);
 }
 
